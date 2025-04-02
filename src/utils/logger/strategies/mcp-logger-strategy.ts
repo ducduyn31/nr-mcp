@@ -82,11 +82,11 @@ export class McpLoggerStrategy implements LoggerStrategy {
 			}
 
 			// Send the log message to the MCP server
-			// this.server.sendLoggingMessage({
-			// 	level,
-			// 	logger: "mcp-server",
-			// 	data,
-			// });
+			this.server.sendLoggingMessage({
+				level,
+				logger: "mcp-server",
+				data,
+			});
 		}
 
 		// Clear the buffer after sending all logs
@@ -151,10 +151,10 @@ export class McpLoggerStrategy implements LoggerStrategy {
 		}
 
 		// Send the log message to the MCP server
-		// this.server.sendLoggingMessage({
-		// 	level,
-		// 	logger: "mcp-server",
-		// 	data,
-		// });
+		this.server.sendLoggingMessage({
+			level,
+			logger: "mcp-server",
+			data,
+		});
 	}
 }
