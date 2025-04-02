@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/ducduyn31/nr-mcp/compare/v1.1.0...v1.2.0) (2025-04-02)
+
+
+### Features
+
+* add logger, tests, and stuffs ([#3](https://github.com/ducduyn31/nr-mcp/issues/3)) ([f7bb168](https://github.com/ducduyn31/nr-mcp/commit/f7bb168dc17941e41b75709b26727ae23a18c0f4))
+
 ## [1.1.0](https://github.com/ducduyn31/nr-mcp/compare/v1.0.0...v1.1.0) (2025-04-01)
 
 
