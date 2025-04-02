@@ -10,6 +10,7 @@ export { LogLevel, type LoggerStrategy, type LoggingMessageSender } from "./type
 export { TextLoggerStrategy } from "./strategies/text-logger-strategy.js";
 export { JsonLoggerStrategy } from "./strategies/json-logger-strategy.js";
 export { McpLoggerStrategy } from "./strategies/mcp-logger-strategy.js";
+export { OnlyErrorLoggerStrategy } from "./strategies/only-error-logger-strategy.js";
 
 // Export Logger class
 export { Logger } from "./logger.js";
@@ -19,10 +20,11 @@ import { Logger } from "./logger.js";
 import { JsonLoggerStrategy } from "./strategies/json-logger-strategy.js";
 import { TextLoggerStrategy } from "./strategies/text-logger-strategy.js";
 import { McpLoggerStrategy } from "./strategies/mcp-logger-strategy.js";
+import { OnlyErrorLoggerStrategy } from "./strategies/only-error-logger-strategy.js";
 import type { LoggingMessageSender } from "./types.js";
 
 // Default logger instance
-export const defaultLogger = createMcpLogger();
+export const defaultLogger = createOnlyErrorLogger();
 
 /**
  * Create a logger with text strategy
@@ -53,4 +55,12 @@ export function createMcpLogger(server?: LoggingMessageSender): Logger {
 	}
 	
 	return Logger.getInstance(mcpStrategy);
+}
+
+/**
+	* Create a logger with OnlyError strategy that only logs error level and above
+	* @returns A logger instance with OnlyError strategy
+	*/
+export function createOnlyErrorLogger(): Logger {
+	return Logger.getInstance(new OnlyErrorLoggerStrategy());
 }

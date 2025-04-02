@@ -5,6 +5,7 @@ import type { TransportAdapter } from "../transports/transport-adapter.js";
 import type { LoggingMessageSender } from "./types.js";
 import { createTransportAdapter } from "../transports/transport-adapter.js";
 import { HelloWorldSchema, helloWorldTool } from "../tools/hello-world.js";
+import { NewRelicLogsSchema, newRelicLogsTool } from "../tools/new-relic-logs.js";
 import type { LoggingMessageNotification } from "@modelcontextprotocol/sdk/types.js";
 import { type Logger, McpLoggerStrategy, createMcpLogger } from "./logger/index.js";
 
@@ -86,6 +87,14 @@ export class McpServer implements LoggingMessageSender {
 			"A simple hello world tool that returns a greeting",
 			HelloWorldSchema,
 			helloWorldTool,
+		);
+		
+		// Register the New Relic logs tool
+		this.mcpServer.tool(
+			"new-relic-logs",
+			"Query New Relic logs using NRQL via NerdGraph",
+			NewRelicLogsSchema,
+			newRelicLogsTool,
 		);
 	}
 
