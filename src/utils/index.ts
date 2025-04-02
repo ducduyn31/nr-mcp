@@ -1,2 +1,2 @@
-export * from "./logger.js";
+export * from "./logger/index.js";
 export * from "./server.js";

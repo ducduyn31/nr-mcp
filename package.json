@@ -19,6 +19,8 @@
     "create-tool": "node scripts/create-tool.ts",
     "test-server": "tsx scripts/test-server.ts",
     "test-logger": "tsx scripts/test-logger.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "start": "node dist/index.js",
     "watch": "nodemon --watch src --ext ts --exec \"npm run build\"",
     "inspector": "mcp-inspector",
@@ -45,7 +47,8 @@
     "concurrently": "^9.1.2",
     "nodemon": "^3.1.9",
     "standard-version": "^9.5.0",
-    "tsx": "^4.19.3"
+    "tsx": "^4.19.3",
+    "vitest": "^3.1.1"
   },
   "peerDependencies": {
     "typescript": "^5.8.2"
