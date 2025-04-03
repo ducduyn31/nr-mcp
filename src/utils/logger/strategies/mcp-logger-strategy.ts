@@ -1,7 +1,11 @@
 /**
  * MCP logger strategy that sends logs to an MCP server
  */
-import type { LogLevel, LoggerStrategy, LoggingMessageSender } from "../types.js";
+import type {
+	LogLevel,
+	LoggerStrategy,
+	LoggingMessageSender,
+} from "../types.js";
 
 /**
  * MCP logger strategy that sends logs to an MCP server
@@ -70,14 +74,17 @@ export class McpLoggerStrategy implements LoggerStrategy {
 		// Send all buffered logs to the server
 		for (const log of this.bufferQueue) {
 			const { level, message, args } = log;
-			
+
 			// Convert any args to a data object
-			const data = args.length > 0 ?
-				(args.length === 1 && typeof args[0] === 'object' ? args[0] : { args }) :
-				{ message };
+			const data =
+				args.length > 0
+					? args.length === 1 && typeof args[0] === "object"
+						? args[0]
+						: { args }
+					: { message };
 
 			// If message is not included in data, add it
-			if (typeof data === 'object' && data !== null && !('message' in data)) {
+			if (typeof data === "object" && data !== null && !("message" in data)) {
 				(data as Record<string, unknown>).message = message;
 			}
 
@@ -98,11 +105,16 @@ export class McpLoggerStrategy implements LoggerStrategy {
 	 * @param log The log entry
 	 * @returns The approximate size in bytes
 	 */
-	private calculateLogSize(log: { level: LogLevel; message: string; args: unknown[]; timestamp: string }): number {
+	private calculateLogSize(log: {
+		level: LogLevel;
+		message: string;
+		args: unknown[];
+		timestamp: string;
+	}): number {
 		// Estimate the size of the log entry
 		// Level (enum string) + message + timestamp
 		let size = log.level.length + log.message.length + log.timestamp.length;
-		
+
 		// Add size for args (rough estimation)
 		if (log.args.length > 0) {
 			try {
@@ -112,7 +124,7 @@ export class McpLoggerStrategy implements LoggerStrategy {
 				size += 1000; // Assume 1KB per arg object as fallback
 			}
 		}
-		
+
 		return size;
 	}
 
@@ -120,19 +132,22 @@ export class McpLoggerStrategy implements LoggerStrategy {
 		// Create a log entry
 		const timestamp = new Date().toISOString();
 		const logEntry = { level, message, args, timestamp };
-		
+
 		if (!this.server) {
 			// No server attached, add to buffer queue
 			const logSize = this.calculateLogSize(logEntry);
-			
+
 			// If adding this log would exceed the buffer size, remove oldest logs
-			while (this.bufferSize + logSize > this.MAX_BUFFER_SIZE && this.bufferQueue.length > 0) {
+			while (
+				this.bufferSize + logSize > this.MAX_BUFFER_SIZE &&
+				this.bufferQueue.length > 0
+			) {
 				const removedLog = this.bufferQueue.shift();
 				if (removedLog) {
 					this.bufferSize -= this.calculateLogSize(removedLog);
 				}
 			}
-			
+
 			// Add the new log to the buffer
 			this.bufferQueue.push(logEntry);
 			this.bufferSize += logSize;
@@ -141,12 +156,15 @@ export class McpLoggerStrategy implements LoggerStrategy {
 
 		// Server is attached, send the log directly
 		// Convert any args to a data object
-		const data = args.length > 0 ?
-			(args.length === 1 && typeof args[0] === 'object' ? args[0] : { args }) :
-			{ message };
+		const data =
+			args.length > 0
+				? args.length === 1 && typeof args[0] === "object"
+					? args[0]
+					: { args }
+				: { message };
 
 		// If message is not included in data, add it
-		if (typeof data === 'object' && data !== null && !('message' in data)) {
+		if (typeof data === "object" && data !== null && !("message" in data)) {
 			(data as Record<string, unknown>).message = message;
 		}
 

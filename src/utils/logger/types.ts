@@ -28,9 +28,9 @@ export interface LoggerStrategy {
  * Re-export LoggingMessageSender interface from the main types file
  */
 export interface LoggingMessageSender {
-  /**
-   * Send a logging message
-   * @param params The logging message parameters
-   */
-  sendLoggingMessage: (params: LoggingMessageNotification["params"]) => void;
+	/**
+	 * Send a logging message
+	 * @param params The logging message parameters
+	 */
+	sendLoggingMessage: (params: LoggingMessageNotification["params"]) => void;
 }

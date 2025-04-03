@@ -12,7 +12,7 @@ export class OnlyErrorLoggerStrategy implements LoggerStrategy {
 	log(level: LogLevel, message: string, ...args: unknown[]): void {
 		// Only log ERROR, CRITICAL, ALERT, and EMERGENCY levels
 		// Ignore DEBUG, INFO, NOTICE, and WARNING levels
-		
+
 		const timestamp = new Date().toISOString();
 
 		switch (level) {
@@ -23,7 +23,7 @@ export class OnlyErrorLoggerStrategy implements LoggerStrategy {
 			case LogLevel.WARNING:
 				// Do nothing for these levels
 				break;
-				
+
 			// Only log error levels and above
 			case LogLevel.ERROR:
 				console.error(

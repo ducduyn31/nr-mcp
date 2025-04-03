@@ -27,7 +27,7 @@ async function main() {
 				region: process.env.NEW_RELIC_REGION as "US" | "EU",
 			},
 		});
-		
+
 		// Create and start the MCP server
 		const server = new McpServer({
 			name: "newrelic-mcp-server",

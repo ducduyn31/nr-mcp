@@ -4,7 +4,11 @@
  */
 
 // Export types
-export { LogLevel, type LoggerStrategy, type LoggingMessageSender } from "./types.js";
+export {
+	LogLevel,
+	type LoggerStrategy,
+	type LoggingMessageSender,
+} from "./types.js";
 
 // Export strategies
 export { TextLoggerStrategy } from "./strategies/text-logger-strategy.js";
@@ -49,18 +53,18 @@ export function createJsonLogger(): Logger {
  */
 export function createMcpLogger(server?: LoggingMessageSender): Logger {
 	const mcpStrategy = new McpLoggerStrategy();
-	
+
 	if (server) {
 		mcpStrategy.attachServer(server);
 	}
-	
+
 	return Logger.getInstance(mcpStrategy);
 }
 
 /**
-	* Create a logger with OnlyError strategy that only logs error level and above
-	* @returns A logger instance with OnlyError strategy
-	*/
+ * Create a logger with OnlyError strategy that only logs error level and above
+ * @returns A logger instance with OnlyError strategy
+ */
 export function createOnlyErrorLogger(): Logger {
 	return Logger.getInstance(new OnlyErrorLoggerStrategy());
 }

@@ -5,9 +5,21 @@ import type { TransportAdapter } from "../transports/transport-adapter.js";
 import type { LoggingMessageSender } from "./types.js";
 import { createTransportAdapter } from "../transports/transport-adapter.js";
 import { HelloWorldSchema, helloWorldTool } from "../tools/hello-world.js";
-import { NewRelicLogsSchema, newRelicLogsTool } from "../tools/new-relic-logs.js";
-import type { LoggingMessageNotification } from "@modelcontextprotocol/sdk/types.js";
-import { type Logger, McpLoggerStrategy, createMcpLogger } from "./logger/index.js";
+import {
+	ListResourcesRequestSchema,
+	ListResourceTemplatesRequestSchema,
+	ReadResourceRequestSchema,
+	type LoggingMessageNotification,
+} from "@modelcontextprotocol/sdk/types.js";
+import {
+	type Logger,
+	McpLoggerStrategy,
+	createMcpLogger,
+} from "./logger/index.js";
+import {
+	listNewRelicLogsResources,
+	readNewRelicLogsResource,
+} from "../resources/index.js";
 
 /**
  * Configuration options for the MCP server
@@ -55,15 +67,23 @@ export class McpServer implements LoggingMessageSender {
 	constructor(private config: McpServerConfig) {
 		// Initialize logger
 		this.currentLogger = config.logger || createMcpLogger();
-		this.currentLogger.info(`Initializing MCP server: ${config.name} v${config.version}`);
+		this.currentLogger.info(
+			`Initializing MCP server: ${config.name} v${config.version}`,
+		);
 
-		// Create the MCP server
+		// Create the MCP server with resource capabilities
 		this.mcpServer = new MCP(
 			{
 				name: config.name,
 				version: config.version,
 			},
-			config.options,
+			{
+				...config.options,
+				capabilities: {
+					...config.options?.capabilities,
+					resources: {},
+				},
+			},
 		);
 
 		this.initLogger();
@@ -71,8 +91,9 @@ export class McpServer implements LoggingMessageSender {
 		// Create the transport adapter
 		this.transportAdapter = createTransportAdapter(config.transportType);
 
-		// Register tools
+		// Register tools and resources
 		this.registerTools();
+		this.registerResources();
 	}
 
 	/**
@@ -88,13 +109,42 @@ export class McpServer implements LoggingMessageSender {
 			HelloWorldSchema,
 			helloWorldTool,
 		);
-		
-		// Register the New Relic logs tool
-		this.mcpServer.tool(
-			"new-relic-logs",
-			"Query New Relic logs using NRQL via NerdGraph",
-			NewRelicLogsSchema,
-			newRelicLogsTool,
+
+	}
+
+	/**
+	 * Registers all resources with the MCP server
+	 */
+	private registerResources(): void {
+		this.currentLogger.info("Registering resources");
+
+		// Set up resource handlers
+		this.mcpServer.server.setRequestHandler(
+			ListResourceTemplatesRequestSchema,
+			async () => {
+				this.currentLogger.info("Handling resources/list request");
+				return await listNewRelicLogsResources();
+			},
+		);
+
+		this.mcpServer.server.setRequestHandler(
+			ReadResourceRequestSchema,
+			async (request) => {
+				const uri = request.params.uri;
+				this.currentLogger.info(
+					`Handling resources/read request for URI: ${uri}`,
+				);
+
+				// Check if this is a New Relic logs resource
+				if (uri.startsWith("newrelic-logs://")) {
+					return await readNewRelicLogsResource(uri, {
+						limit: 100,
+						timeRange: 60, // Default to last 60 minutes
+					});
+				}
+
+				throw new Error(`Unsupported resource URI: ${uri}`);
+			},
 		);
 	}
 
