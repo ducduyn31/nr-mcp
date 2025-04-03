@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/ducduyn31/nr-mcp/compare/v1.4.0...v1.5.0) (2025-04-03)
+
+
+### Features
+
+* add dashboard resouce ([#9](https://github.com/ducduyn31/nr-mcp/issues/9)) ([341b02f](https://github.com/ducduyn31/nr-mcp/commit/341b02fb711d22055650b189f00dff5185a960e7))
+
 ## [1.4.0](https://github.com/ducduyn31/nr-mcp/compare/v1.3.0...v1.4.0) (2025-04-03)
 
 
