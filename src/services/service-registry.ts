@@ -4,6 +4,7 @@ import {
 } from "../utils/service-container.js";
 import type { NewRelicApiConfig } from "./new-relic-base-service.js";
 import { NewRelicLogsService } from "./new-relic-logs-service.js";
+import { NewRelicTagsService } from "./new-relic-tags-service.js";
 
 /**
  * Configuration for service registry
@@ -24,6 +25,10 @@ export function initializeServices(config: ServiceRegistryConfig = {}): void {
 		const logsService = new NewRelicLogsService(config.newRelicConfig);
 		// Use a type assertion to help TypeScript understand the constructor type
 		registerService(NewRelicLogsService, logsService);
+		
+		// Initialize and register the tags service
+		const tagsService = new NewRelicTagsService(config.newRelicConfig);
+		registerService(NewRelicTagsService, tagsService);
 	}
 }
 

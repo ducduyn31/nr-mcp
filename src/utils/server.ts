@@ -4,7 +4,7 @@ import type { ServerOptions } from "@modelcontextprotocol/sdk/server/index.js";
 import type { TransportAdapter } from "../transports/transport-adapter.js";
 import type { LoggingMessageSender } from "./types.js";
 import { createTransportAdapter } from "../transports/transport-adapter.js";
-import { HelloWorldSchema, helloWorldTool } from "../tools/hello-world.js";
+import { registerAllTools } from "../tools/index.js";
 import {
 	ListResourcesRequestSchema,
 	ListResourceTemplatesRequestSchema,
@@ -17,8 +17,9 @@ import {
 	createMcpLogger,
 } from "./logger/index.js";
 import {
-	listNewRelicLogsResources,
-	readNewRelicLogsResource,
+	listAllResources,
+	listAllResourceTemplates,
+	readResource,
 } from "../resources/index.js";
 
 /**
@@ -102,14 +103,8 @@ export class McpServer implements LoggingMessageSender {
 	private registerTools(): void {
 		this.currentLogger.info("Registering tools");
 
-		// Register the hello world tool
-		this.mcpServer.tool(
-			"hello-world",
-			"A simple hello world tool that returns a greeting",
-			HelloWorldSchema,
-			helloWorldTool,
-		);
-
+		// Use the centralized tool registry to register all tools
+		registerAllTools(this.mcpServer);
 	}
 
 	/**
@@ -118,12 +113,19 @@ export class McpServer implements LoggingMessageSender {
 	private registerResources(): void {
 		this.currentLogger.info("Registering resources");
 
-		// Set up resource handlers
+		this.mcpServer.server.setRequestHandler(
+			ListResourcesRequestSchema,
+			async () => {
+				this.currentLogger.info("Handling resources/list request");
+				return await listAllResources();
+			},
+		);
+
 		this.mcpServer.server.setRequestHandler(
 			ListResourceTemplatesRequestSchema,
 			async () => {
-				this.currentLogger.info("Handling resources/list request");
-				return await listNewRelicLogsResources();
+				this.currentLogger.info("Handling resource templates/list request");
+				return await listAllResourceTemplates();
 			},
 		);
 
@@ -135,15 +137,11 @@ export class McpServer implements LoggingMessageSender {
 					`Handling resources/read request for URI: ${uri}`,
 				);
 
-				// Check if this is a New Relic logs resource
-				if (uri.startsWith("newrelic-logs://")) {
-					return await readNewRelicLogsResource(uri, {
-						limit: 100,
-						timeRange: 60, // Default to last 60 minutes
-					});
-				}
-
-				throw new Error(`Unsupported resource URI: ${uri}`);
+				// Use the centralized resource registry to handle the request
+				return await readResource(uri, {
+					limit: 100,
+					timeRange: 60, // Default options for logs resources
+				});
 			},
 		);
 	}
