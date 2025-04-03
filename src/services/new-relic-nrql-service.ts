@@ -1,12 +1,11 @@
 import { NewRelicBaseService } from "./new-relic-base-service.js";
 import type { NewRelicApiConfig } from "./new-relic-base-service.js";
 import { defaultLogger } from "../utils/logger/index.js";
+import { gql } from "graphql-request";
 import {
 	NewRelicDashboardsService,
-	type Dashboard,
 	type DashboardDetails,
 	type DashboardsQueryOptions,
-	type DashboardsQueryResult,
 } from "./new-relic-dashboards-service.js";
 import { defaultContainer, type Constructor } from "../utils/index.js";
 import { PromisePool } from "@supercharge/promise-pool";
@@ -163,4 +162,107 @@ export class NewRelicNrqlService extends NewRelicBaseService {
 
 		return nrqlQueries;
 	}
+	/**
+	 * Execute a NRQL query and return the results
+	 * @param query The NRQL query to execute
+	 * @param timeout Optional timeout in milliseconds (default: 30000)
+	 * @returns The query results with datapoints
+	 */
+	async executeNrqlQuery(
+		query: string,
+		timeout = 30000,
+	): Promise<NrqlQueryResult> {
+		try {
+			defaultLogger.info(`Executing NRQL query: ${query}`);
+			const startTime = Date.now();
+
+			// GraphQL query to execute NRQL
+			const nrqlGraphQLQuery = gql`
+				query ($accountId: Int!, $nrqlQuery: Nrql!, $timeout: Seconds) {
+					actor {
+						account(id: $accountId) {
+							nrql(query: $nrqlQuery, timeout: $timeout) {
+								results
+								metadata {
+									facets
+									timeWindow {
+										begin
+										end
+									}
+								}
+							}
+						}
+					}
+				}
+			`;
+
+			// Execute the GraphQL query
+			const variables = {
+				accountId: Number.parseInt(this.accountId, 10),
+				nrqlQuery: query,
+				timeout,
+			};
+
+			const response = await this.executeNerdGraphQuery<NrqlGraphQLResponse>(
+				nrqlGraphQLQuery,
+				variables,
+			);
+
+			const elapsedTime = Date.now() - startTime;
+
+			// Extract results and metadata
+			const results = response.actor.account.nrql.results;
+			const metadata = response.actor.account.nrql.metadata;
+
+			defaultLogger.info(
+				`NRQL query executed in ${elapsedTime}ms, returned ${results.length} datapoints`,
+			);
+
+			return {
+				results,
+				metadata,
+				query,
+				elapsedTime,
+			};
+		} catch (error) {
+			defaultLogger.error(`Failed to execute NRQL query: ${query}`, error);
+			throw error;
+		}
+	}
+}
+
+/**
+ * Interface for NRQL GraphQL response
+ */
+interface NrqlGraphQLResponse {
+	actor: {
+		account: {
+			nrql: {
+				results: Record<string, unknown>[];
+				metadata: {
+					facets: string[] | null;
+					timeWindow: {
+						begin: number;
+						end: number;
+					};
+				};
+			};
+		};
+	};
+}
+
+/**
+ * Interface for NRQL query result
+ */
+export interface NrqlQueryResult {
+	results: Record<string, unknown>[];
+	metadata: {
+		facets: string[] | null;
+		timeWindow: {
+			begin: number;
+			end: number;
+		};
+	};
+	query: string;
+	elapsedTime: number;
 }

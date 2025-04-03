@@ -1,9 +1,9 @@
 import { defaultLogger } from "../utils/logger/index.js";
-import { HelloWorldSchema, helloWorldTool } from "./hello-world.js";
+import { RunNrqlQuerySchema, runNrqlQueryTool } from "./run-nrql-query.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 // Export all tool functions for direct use
-export * from "./hello-world.js";
+export * from "./run-nrql-query.js";
 
 /**
  * Register all tools with the MCP server
@@ -12,12 +12,12 @@ export * from "./hello-world.js";
 export function registerAllTools(server: McpServer): void {
 	defaultLogger.info("Registering all tools");
 
-	// Register the hello world tool
+	// Register the run NRQL query tool
 	server.tool(
-		"hello-world",
-		"A simple hello world tool that returns a greeting",
-		HelloWorldSchema,
-		helloWorldTool,
+		"run-nrql-query",
+		"Execute a NRQL query and return the results as datapoints",
+		RunNrqlQuerySchema,
+		runNrqlQueryTool,
 	);
 
 	// Add more tool registrations here as they are created
