@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/ducduyn31/nr-mcp/compare/v1.2.0...v1.3.0) (2025-04-03)
+
+
+### Features
+
+* add tools to trace logs ([#5](https://github.com/ducduyn31/nr-mcp/issues/5)) ([ee8c2bd](https://github.com/ducduyn31/nr-mcp/commit/ee8c2bdab477f747016e4668421fa7fa3abb4c27))
+
 ## [1.2.0](https://github.com/ducduyn31/nr-mcp/compare/v1.1.0...v1.2.0) (2025-04-02)
 
 
