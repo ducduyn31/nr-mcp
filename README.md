@@ -28,7 +28,7 @@ docker run -it --rm \
   -e NEW_RELIC_API_KEY=your_api_key \
   -e NEW_RELIC_ACCOUNT_ID=your_account_id \
   -e NEW_RELIC_REGION=US \
-  ducduyn31/nr-mcp
+  danielng123/nr-mcp
 ```
 
 ### Option 2: Using npx
@@ -56,7 +56,7 @@ To connect an AI assistant to nr-mcp, add the following configuration to your MC
         "NEW_RELIC_ACCOUNT_ID",
         "-e",
         "NEW_RELIC_REGION",
-        "ducduyn31/nr-mcp"
+        "danielng123/nr-mcp"
       ],
       "env": {
         "NEW_RELIC_API_KEY": "<YOUR_API_KEY>",
