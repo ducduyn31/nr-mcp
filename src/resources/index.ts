@@ -7,10 +7,15 @@ import {
   listNewRelicServicesResources,
   readNewRelicServicesResource,
 } from "./new-relic-services-resource.js";
+import {
+  listNewRelicDashboardsResources,
+  readNewRelicDashboardsResource,
+} from "./new-relic-dashboards-resource.js";
 
 // Export all resource functions for direct use
 export * from "./new-relic-logs-resource.js";
 export * from "./new-relic-services-resource.js";
+export * from "./new-relic-dashboards-resource.js";
 
 /**
  * Interface for resource template
@@ -71,6 +76,12 @@ const resourceRegistry: ResourceRegistryEntry[] = [
     uriPattern: /^newrelic-services:\/\/.+/,
     listResources: listNewRelicServicesResources,
     readResource: readNewRelicServicesResource,
+  },
+  // New Relic Dashboards Resource
+  {
+    uriPattern: /^newrelic-dashboards:\/\/.+/,
+    listResources: listNewRelicDashboardsResources,
+    readResource: readNewRelicDashboardsResource,
   },
 ];
 
