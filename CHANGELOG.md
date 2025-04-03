@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/ducduyn31/nr-mcp/compare/v1.6.0...v1.7.0) (2025-04-03)
+
+
+### Features
+
+* add tool to run nrql ([#13](https://github.com/ducduyn31/nr-mcp/issues/13)) ([fbfdc6d](https://github.com/ducduyn31/nr-mcp/commit/fbfdc6d43dfea07ede2b50e5b646f49894449d1f))
+
 ## [1.6.0](https://github.com/ducduyn31/nr-mcp/compare/v1.5.0...v1.6.0) (2025-04-03)
 
 
