@@ -1,6 +1,5 @@
 import { defaultLogger } from "../utils/logger/index.js";
 import { HelloWorldSchema, helloWorldTool } from "./hello-world.js";
-import { GetServicesTagsSchema, getServicesTagsTool } from "./get-services-tags.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 // Export all tool functions for direct use
