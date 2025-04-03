@@ -1,11 +1,11 @@
 import {
-  defaultLogger,
-  defaultContainer,
-  type Constructor,
+	defaultLogger,
+	defaultContainer,
+	type Constructor,
 } from "../utils/index.js";
 import {
-  NewRelicNrqlService,
-  type ServiceNrqlQueryResult,
+	NewRelicNrqlService,
+	type ServiceNrqlQueryResult,
 } from "../services/new-relic-nrql-service.js";
 import type { ResourceTemplate } from "./index.js";
 
@@ -22,18 +22,18 @@ const NEW_RELIC_NRQL_SERVICE_URI_PATTERN = /^newrelic-nrql:\/\/service\/(.+)$/;
  * @returns The parsed URI components or null if the URI is invalid
  */
 export function parseNewRelicNrqlUri(
-  uri: string,
+	uri: string,
 ): { serviceName?: string } | null {
-  // Try to match service URI pattern
-  const serviceMatch = uri.match(NEW_RELIC_NRQL_SERVICE_URI_PATTERN);
-  if (serviceMatch) {
-    const [, serviceName] = serviceMatch;
-    return {
-      serviceName,
-    };
-  }
+	// Try to match service URI pattern
+	const serviceMatch = uri.match(NEW_RELIC_NRQL_SERVICE_URI_PATTERN);
+	if (serviceMatch) {
+		const [, serviceName] = serviceMatch;
+		return {
+			serviceName,
+		};
+	}
 
-  return null;
+	return null;
 }
 
 /**
@@ -41,17 +41,17 @@ export function parseNewRelicNrqlUri(
  * @returns The list of available resources
  */
 export async function listNewRelicNrqlResources() {
-  return {
-    resources: [],
-    resourceTemplates: [
-      {
-        uriTemplate: "newrelic-nrql://service/{serviceName}",
-        name: "New Relic NRQLs by Service",
-        description: "All NRQL queries related to a specific service",
-        mimeType: "application/json",
-      },
-    ],
-  };
+	return {
+		resources: [],
+		resourceTemplates: [
+			{
+				uriTemplate: "newrelic-nrql://service/{serviceName}",
+				name: "New Relic NRQLs by Service",
+				description: "All NRQL queries related to a specific service",
+				mimeType: "application/json",
+			},
+		],
+	};
 }
 
 /**
@@ -62,32 +62,36 @@ export async function listNewRelicNrqlResources() {
  * @returns The resource content
  */
 async function readNewRelicNrqlsByService(
-  uri: string,
-  serviceName: string,
-  nrqlService: NewRelicNrqlService
+	uri: string,
+	serviceName: string,
+	nrqlService: NewRelicNrqlService,
 ) {
-  // Execute the query for service NRQLs
-  const result = await nrqlService.queryNrqlsByService({
-    serviceName,
-  });
+	// Execute the query for service NRQLs
+	const result = await nrqlService.queryNrqlsByService({
+		serviceName,
+	});
 
-  defaultLogger.info(
-    `Retrieved ${result.queries.length} NRQL queries for service ${serviceName}`,
-  );
+	defaultLogger.info(
+		`Retrieved ${result.queries.length} NRQL queries for service ${serviceName}`,
+	);
 
-  // Return the resource content
-  return {
-    contents: [
-      {
-        uri,
-        mimeType: "application/json",
-        text: JSON.stringify({
-          queries: result.queries,
-          metadata: result.metadata
-        }, null, 2),
-      },
-    ],
-  };
+	// Return the resource content
+	return {
+		contents: [
+			{
+				uri,
+				mimeType: "application/json",
+				text: JSON.stringify(
+					{
+						queries: result.queries,
+						metadata: result.metadata,
+					},
+					null,
+					2,
+				),
+			},
+		],
+	};
 }
 
 /**
@@ -96,31 +100,35 @@ async function readNewRelicNrqlsByService(
  * @returns The resource content
  */
 export async function readNewRelicNrqlResource(uri: string) {
-  try {
-    defaultLogger.info(`Reading New Relic NRQL resource: ${uri}`);
+	try {
+		defaultLogger.info(`Reading New Relic NRQL resource: ${uri}`);
 
-    // Parse the URI
-    const parsedUri = parseNewRelicNrqlUri(uri);
-    if (!parsedUri) {
-      throw new Error(`Invalid New Relic NRQL resource URI: ${uri}`);
-    }
+		// Parse the URI
+		const parsedUri = parseNewRelicNrqlUri(uri);
+		if (!parsedUri) {
+			throw new Error(`Invalid New Relic NRQL resource URI: ${uri}`);
+		}
 
-    // Get the NRQL service from the container
-    const nrqlService = defaultContainer.get(
-      NewRelicNrqlService as unknown as Constructor<NewRelicNrqlService>,
-    ) as NewRelicNrqlService;
+		// Get the NRQL service from the container
+		const nrqlService = defaultContainer.get(
+			NewRelicNrqlService as unknown as Constructor<NewRelicNrqlService>,
+		) as NewRelicNrqlService;
 
-    // Handle different URI patterns
-    if (parsedUri.serviceName) {
-      return await readNewRelicNrqlsByService(uri, parsedUri.serviceName, nrqlService);
-    }
-    
-    throw new Error(`Invalid New Relic NRQL resource URI format: ${uri}`);
-  } catch (error) {
-    defaultLogger.error(
-      `Failed to read New Relic NRQL resource: ${uri}`,
-      error,
-    );
-    throw error;
-  }
+		// Handle different URI patterns
+		if (parsedUri.serviceName) {
+			return await readNewRelicNrqlsByService(
+				uri,
+				parsedUri.serviceName,
+				nrqlService,
+			);
+		}
+
+		throw new Error(`Invalid New Relic NRQL resource URI format: ${uri}`);
+	} catch (error) {
+		defaultLogger.error(
+			`Failed to read New Relic NRQL resource: ${uri}`,
+			error,
+		);
+		throw error;
+	}
 }

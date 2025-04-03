@@ -1,19 +1,19 @@
 import { defaultLogger } from "../utils/logger/index.js";
 import {
-  listNewRelicLogsResources,
-  readNewRelicLogsResource,
+	listNewRelicLogsResources,
+	readNewRelicLogsResource,
 } from "./new-relic-logs-resource.js";
 import {
-  listNewRelicServicesResources,
-  readNewRelicServicesResource,
+	listNewRelicServicesResources,
+	readNewRelicServicesResource,
 } from "./new-relic-services-resource.js";
 import {
-  listNewRelicDashboardsResources,
-  readNewRelicDashboardsResource,
+	listNewRelicDashboardsResources,
+	readNewRelicDashboardsResource,
 } from "./new-relic-dashboards-resource.js";
 import {
-  listNewRelicNrqlResources,
-  readNewRelicNrqlResource,
+	listNewRelicNrqlResources,
+	readNewRelicNrqlResource,
 } from "./new-relic-nrql-resource.js";
 
 // Export all resource functions for direct use
@@ -26,98 +26,100 @@ export * from "./new-relic-nrql-resource.js";
  * Interface for resource template
  */
 export interface ResourceTemplate {
-  uriTemplate: string;
-  name: string;
-  description: string;
-  mimeType: string;
+	uriTemplate: string;
+	name: string;
+	description: string;
+	mimeType: string;
 }
 
 /**
- * Interface for direct resource 
+ * Interface for direct resource
  */
 export interface DirectResource {
-  uri: string;
-  name: string;
-  description: string;
-  mimeType: string;
+	uri: string;
+	name: string;
+	description: string;
+	mimeType: string;
 }
 
 /**
  * Interface for resource content
  */
 export interface ResourceContent {
-  uri: string;
-  mimeType: string;
-  text?: string;
-  blob?: string;
+	uri: string;
+	mimeType: string;
+	text?: string;
+	blob?: string;
 }
 
 /**
  * Interface for resource registry entry
  */
 export interface ResourceRegistryEntry {
-  uriPattern: RegExp;
-  listResources: () => Promise<{
-    resources: ResourceContent[];
-    resourceTemplates: ResourceTemplate[];
-  }>;
-  readResource: (uri: string, options?: Record<string, unknown>) => Promise<{
-    contents: ResourceContent[];
-  }>;
+	uriPattern: RegExp;
+	listResources: () => Promise<{
+		resources: ResourceContent[];
+		resourceTemplates: ResourceTemplate[];
+	}>;
+	readResource: (
+		uri: string,
+		options?: Record<string, unknown>,
+	) => Promise<{
+		contents: ResourceContent[];
+	}>;
 }
 
 /**
  * Central registry of all available resources
  */
 const resourceRegistry: ResourceRegistryEntry[] = [
-  // New Relic Logs Resource
-  {
-    uriPattern: /^newrelic-logs:\/\/.+/,
-    listResources: listNewRelicLogsResources,
-    readResource: readNewRelicLogsResource,
-  },
-  // New Relic Services Resource
-  {
-    uriPattern: /^newrelic-services:\/\/.+/,
-    listResources: listNewRelicServicesResources,
-    readResource: readNewRelicServicesResource,
-  },
-  // New Relic Dashboards Resource
-  {
-    uriPattern: /^newrelic-dashboards:\/\/.+/,
-    listResources: listNewRelicDashboardsResources,
-    readResource: readNewRelicDashboardsResource,
-  },
-  // New Relic NRQL Resource
-  {
-    uriPattern: /^newrelic-nrql:\/\/.+/,
-    listResources: listNewRelicNrqlResources,
-    readResource: readNewRelicNrqlResource,
-  },
+	// New Relic Logs Resource
+	{
+		uriPattern: /^newrelic-logs:\/\/.+/,
+		listResources: listNewRelicLogsResources,
+		readResource: readNewRelicLogsResource,
+	},
+	// New Relic Services Resource
+	{
+		uriPattern: /^newrelic-services:\/\/.+/,
+		listResources: listNewRelicServicesResources,
+		readResource: readNewRelicServicesResource,
+	},
+	// New Relic Dashboards Resource
+	{
+		uriPattern: /^newrelic-dashboards:\/\/.+/,
+		listResources: listNewRelicDashboardsResources,
+		readResource: readNewRelicDashboardsResource,
+	},
+	// New Relic NRQL Resource
+	{
+		uriPattern: /^newrelic-nrql:\/\/.+/,
+		listResources: listNewRelicNrqlResources,
+		readResource: readNewRelicNrqlResource,
+	},
 ];
 
 /**
  * List all available resources across all registered resource types
- * @returns Combined list of all resources 
+ * @returns Combined list of all resources
  */
 export async function listAllResources() {
-  defaultLogger.info("Listing all available resources");
-  let allResources: ResourceContent[] = [];
-  
-  
-  // Collect resources from all registered resource types
-  for (const entry of resourceRegistry) {
-    try {
-      const result = await entry.listResources();
-      allResources = [...allResources, ...(result.resources || [])];
-    } catch (error) {
-      defaultLogger.error("Error listing resources", error);
-    }
-  }
-  
-  return {
-    resources: allResources,
-  };
+	defaultLogger.info("Listing all available resources");
+	let allResources: ResourceContent[] = [];
+
+	// Collect resources from all registered resource types
+	for (const entry of resourceRegistry) {
+		try {
+			const result = await entry.listResources();
+			allResources = [...allResources, ...(result.resources || [])];
+		} catch (error) {
+			defaultLogger.error("Error listing resources", error);
+		}
+	}
+
+	return {
+		resources: allResources,
+	};
 }
 
 /**
@@ -125,23 +127,25 @@ export async function listAllResources() {
  * @returns Combined list of all resource templates
  */
 export async function listAllResourceTemplates() {
-  defaultLogger.info("Listing all available resource templates");
-  let allResourceTemplates: ResourceTemplate[] = [];
-  
-  
-  // Collect resources from all registered resource types
-  for (const entry of resourceRegistry) {
-    try {
-      const result = await entry.listResources();
-      allResourceTemplates = [...allResourceTemplates, ...(result.resourceTemplates || [])];
-    } catch (error) {
-      defaultLogger.error("Error listing resources", error);
-    }
-  }
-  
-  return {
-    resourceTemplates: allResourceTemplates,
-  };
+	defaultLogger.info("Listing all available resource templates");
+	let allResourceTemplates: ResourceTemplate[] = [];
+
+	// Collect resources from all registered resource types
+	for (const entry of resourceRegistry) {
+		try {
+			const result = await entry.listResources();
+			allResourceTemplates = [
+				...allResourceTemplates,
+				...(result.resourceTemplates || []),
+			];
+		} catch (error) {
+			defaultLogger.error("Error listing resources", error);
+		}
+	}
+
+	return {
+		resourceTemplates: allResourceTemplates,
+	};
 }
 
 /**
@@ -151,15 +155,18 @@ export async function listAllResourceTemplates() {
  * @returns The resource content
  * @throws Error if the resource URI is not supported
  */
-export async function readResource(uri: string, options?: Record<string, unknown>) {
-  defaultLogger.info(`Reading resource: ${uri}`);
-  
-  // Find the appropriate resource handler
-  for (const entry of resourceRegistry) {
-    if (entry.uriPattern.test(uri)) {
-      return await entry.readResource(uri, options);
-    }
-  }
-  
-  throw new Error(`Unsupported resource URI: ${uri}`);
+export async function readResource(
+	uri: string,
+	options?: Record<string, unknown>,
+) {
+	defaultLogger.info(`Reading resource: ${uri}`);
+
+	// Find the appropriate resource handler
+	for (const entry of resourceRegistry) {
+		if (entry.uriPattern.test(uri)) {
+			return await entry.readResource(uri, options);
+		}
+	}
+
+	throw new Error(`Unsupported resource URI: ${uri}`);
 }

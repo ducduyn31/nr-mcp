@@ -10,15 +10,15 @@ export * from "./hello-world.js";
  * @param server The MCP server instance
  */
 export function registerAllTools(server: McpServer): void {
-  defaultLogger.info("Registering all tools");
-  
-  // Register the hello world tool
-  server.tool(
-    "hello-world",
-    "A simple hello world tool that returns a greeting",
-    HelloWorldSchema,
-    helloWorldTool
-  );
-  
-  // Add more tool registrations here as they are created
+	defaultLogger.info("Registering all tools");
+
+	// Register the hello world tool
+	server.tool(
+		"hello-world",
+		"A simple hello world tool that returns a greeting",
+		HelloWorldSchema,
+		helloWorldTool,
+	);
+
+	// Add more tool registrations here as they are created
 }

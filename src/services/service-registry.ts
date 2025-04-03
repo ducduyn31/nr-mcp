@@ -27,15 +27,17 @@ export function initializeServices(config: ServiceRegistryConfig = {}): void {
 		const logsService = new NewRelicLogsService(config.newRelicConfig);
 		// Use a type assertion to help TypeScript understand the constructor type
 		registerService(NewRelicLogsService, logsService);
-		
+
 		// Initialize and register the tags service
 		const tagsService = new NewRelicTagsService(config.newRelicConfig);
 		registerService(NewRelicTagsService, tagsService);
-		
+
 		// Initialize and register the dashboards service
-		const dashboardsService = new NewRelicDashboardsService(config.newRelicConfig);
+		const dashboardsService = new NewRelicDashboardsService(
+			config.newRelicConfig,
+		);
 		registerService(NewRelicDashboardsService, dashboardsService);
-		
+
 		// Initialize and register the NRQL service
 		const nrqlService = new NewRelicNrqlService(config.newRelicConfig);
 		registerService(NewRelicNrqlService, nrqlService);
