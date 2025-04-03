@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/ducduyn31/nr-mcp/compare/v1.3.0...v1.4.0) (2025-04-03)
+
+
+### Features
+
+* add services listing resouce ([#7](https://github.com/ducduyn31/nr-mcp/issues/7)) ([1d94248](https://github.com/ducduyn31/nr-mcp/commit/1d94248abf361cf96aaffd0522ef950e135bf50c))
+
 ## [1.3.0](https://github.com/ducduyn31/nr-mcp/compare/v1.2.0...v1.3.0) (2025-04-03)
 
 
