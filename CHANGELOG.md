@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/ducduyn31/nr-mcp/compare/v1.5.0...v1.6.0) (2025-04-03)
+
+
+### Features
+
+* add abilities to list nrql for a service and dashboard ([#11](https://github.com/ducduyn31/nr-mcp/issues/11)) ([ea94acf](https://github.com/ducduyn31/nr-mcp/commit/ea94acf0175421630ebc04e2d058b638469e2e14))
+
 ## [1.5.0](https://github.com/ducduyn31/nr-mcp/compare/v1.4.0...v1.5.0) (2025-04-03)
 
 
