@@ -11,11 +11,16 @@ import {
   listNewRelicDashboardsResources,
   readNewRelicDashboardsResource,
 } from "./new-relic-dashboards-resource.js";
+import {
+  listNewRelicNrqlResources,
+  readNewRelicNrqlResource,
+} from "./new-relic-nrql-resource.js";
 
 // Export all resource functions for direct use
 export * from "./new-relic-logs-resource.js";
 export * from "./new-relic-services-resource.js";
 export * from "./new-relic-dashboards-resource.js";
+export * from "./new-relic-nrql-resource.js";
 
 /**
  * Interface for resource template
@@ -82,6 +87,12 @@ const resourceRegistry: ResourceRegistryEntry[] = [
     uriPattern: /^newrelic-dashboards:\/\/.+/,
     listResources: listNewRelicDashboardsResources,
     readResource: readNewRelicDashboardsResource,
+  },
+  // New Relic NRQL Resource
+  {
+    uriPattern: /^newrelic-nrql:\/\/.+/,
+    listResources: listNewRelicNrqlResources,
+    readResource: readNewRelicNrqlResource,
   },
 ];
 

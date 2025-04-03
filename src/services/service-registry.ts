@@ -6,6 +6,7 @@ import type { NewRelicApiConfig } from "./new-relic-base-service.js";
 import { NewRelicLogsService } from "./new-relic-logs-service.js";
 import { NewRelicTagsService } from "./new-relic-tags-service.js";
 import { NewRelicDashboardsService } from "./new-relic-dashboards-service.js";
+import { NewRelicNrqlService } from "./new-relic-nrql-service.js";
 
 /**
  * Configuration for service registry
@@ -34,6 +35,10 @@ export function initializeServices(config: ServiceRegistryConfig = {}): void {
 		// Initialize and register the dashboards service
 		const dashboardsService = new NewRelicDashboardsService(config.newRelicConfig);
 		registerService(NewRelicDashboardsService, dashboardsService);
+		
+		// Initialize and register the NRQL service
+		const nrqlService = new NewRelicNrqlService(config.newRelicConfig);
+		registerService(NewRelicNrqlService, nrqlService);
 	}
 }
 
