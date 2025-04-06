@@ -5,6 +5,7 @@ import type { TransportAdapter } from "../transports/transport-adapter.js";
 import type { LoggingMessageSender } from "./types.js";
 import { createTransportAdapter } from "../transports/transport-adapter.js";
 import { registerAllTools } from "../tools/index.js";
+import { registerAllPrompts } from "../prompts/index.js";
 import {
 	ListResourcesRequestSchema,
 	ListResourceTemplatesRequestSchema,
@@ -83,6 +84,7 @@ export class McpServer implements LoggingMessageSender {
 				capabilities: {
 					...config.options?.capabilities,
 					resources: {},
+					prompts: {},
 				},
 			},
 		);
@@ -92,9 +94,10 @@ export class McpServer implements LoggingMessageSender {
 		// Create the transport adapter
 		this.transportAdapter = createTransportAdapter(config.transportType);
 
-		// Register tools and resources
+		// Register tools, resources, and prompts
 		this.registerTools();
 		this.registerResources();
+		this.registerPrompts();
 	}
 
 	/**
@@ -144,6 +147,16 @@ export class McpServer implements LoggingMessageSender {
 				});
 			},
 		);
+	}
+
+	/**
+	 * Registers all prompts with the MCP server
+	 */
+	private registerPrompts(): void {
+		this.currentLogger.info("Registering prompts");
+
+		// Use the centralized prompt registry to register all prompts
+		registerAllPrompts(this.mcpServer);
 	}
 
 	/**
