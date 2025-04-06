@@ -15,12 +15,17 @@ import {
 	listNewRelicNrqlResources,
 	readNewRelicNrqlResource,
 } from "./new-relic-nrql-resource.js";
+import {
+	listNewRelicSchemaResources,
+	readNewRelicSchemaResource,
+} from "./new-relic-schema-resource.js";
 
 // Export all resource functions for direct use
 export * from "./new-relic-logs-resource.js";
 export * from "./new-relic-services-resource.js";
 export * from "./new-relic-dashboards-resource.js";
 export * from "./new-relic-nrql-resource.js";
+export * from "./new-relic-schema-resource.js";
 
 /**
  * Interface for resource template
@@ -96,6 +101,12 @@ const resourceRegistry: ResourceRegistryEntry[] = [
 		uriPattern: /^newrelic-nrql:\/\/.+/,
 		listResources: listNewRelicNrqlResources,
 		readResource: readNewRelicNrqlResource,
+	},
+	// New Relic Schema Resource
+	{
+		uriPattern: /^newrelic-schema:\/\/.+/,
+		listResources: listNewRelicSchemaResources,
+		readResource: readNewRelicSchemaResource,
 	},
 ];
 

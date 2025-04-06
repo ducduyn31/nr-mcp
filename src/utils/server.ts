@@ -4,6 +4,8 @@ import type { ServerOptions } from "@modelcontextprotocol/sdk/server/index.js";
 import type { TransportAdapter } from "../transports/transport-adapter.js";
 import type { LoggingMessageSender } from "./types.js";
 import { createTransportAdapter } from "../transports/transport-adapter.js";
+import { defaultContainer, type Constructor } from "./service-container.js";
+import { EventBus, EventType } from "./event-bus.js";
 import { registerAllTools } from "../tools/index.js";
 import { registerAllPrompts } from "../prompts/index.js";
 import {
@@ -61,6 +63,7 @@ export class McpServer implements LoggingMessageSender {
 	private transportAdapter: TransportAdapter;
 	private transport: Transport | null = null;
 	private currentLogger: Logger;
+	private schemaUpdateHandlers: Map<string, () => void> = new Map();
 
 	/**
 	 * Creates a new McpServer instance
@@ -98,6 +101,7 @@ export class McpServer implements LoggingMessageSender {
 		this.registerTools();
 		this.registerResources();
 		this.registerPrompts();
+		this.registerEventHandlers();
 	}
 
 	/**
@@ -223,5 +227,49 @@ export class McpServer implements LoggingMessageSender {
 			strategy.attachServer(this.mcpServer.server);
 			this.currentLogger.info("MCP server logger set successfully");
 		}
+	}
+
+	/**
+	 * Registers event handlers for various services
+	 */
+	private registerEventHandlers(): void {
+		this.currentLogger.info("Registering event handlers");
+		
+		// Register schema update handler
+		this.registerSchemaUpdateHandler();
+	}
+
+	/**
+	 * Registers a handler for schema updates
+	 */
+	private registerSchemaUpdateHandler(): void {
+		this.currentLogger.info("Registering schema update handler");
+
+		// Get the EventBus from the service container
+		const eventBus = defaultContainer.get(
+			EventBus as unknown as Constructor<EventBus>
+		) as EventBus;
+		
+		// Subscribe to schema updated events
+		eventBus.subscribe(EventType.SCHEMA_UPDATED, (payload) => {
+			const tableName = payload.data as string;
+			this.currentLogger.info(`Schema updated for table: ${tableName}`);
+			
+			// Send notification that the schema resource has been updated
+			const resourceUris = [
+				`newrelic-schema://table/${tableName}`,
+				"newrelic-schema://list"
+			];
+
+			// Send the notification to the MCP server
+			for (const uri of resourceUris) {
+				this.mcpServer.server.sendResourceUpdated({
+					uri,
+				});
+			}
+			
+			this.currentLogger.info(`Sent resources/updated notification for: ${resourceUris.join(", ")}`);
+		});
+		
 	}
 }

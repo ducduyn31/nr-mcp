@@ -7,6 +7,8 @@ import { NewRelicLogsService } from "./new-relic-logs-service.js";
 import { NewRelicTagsService } from "./new-relic-tags-service.js";
 import { NewRelicDashboardsService } from "./new-relic-dashboards-service.js";
 import { NewRelicNrqlService } from "./new-relic-nrql-service.js";
+import { NewRelicSchemaService } from "./new-relic-schema-service.js";
+import { EventBus } from "../utils/event-bus.js";
 
 /**
  * Configuration for service registry
@@ -23,6 +25,10 @@ export interface ServiceRegistryConfig {
  * @param config Service registry configuration
  */
 export function initializeServices(config: ServiceRegistryConfig = {}): void {
+	// Initialize and register the EventBus service
+	const eventBus = new EventBus();
+	registerService(EventBus, eventBus);
+	
 	if (config.newRelicConfig) {
 		const logsService = new NewRelicLogsService(config.newRelicConfig);
 		// Use a type assertion to help TypeScript understand the constructor type
@@ -41,6 +47,10 @@ export function initializeServices(config: ServiceRegistryConfig = {}): void {
 		// Initialize and register the NRQL service
 		const nrqlService = new NewRelicNrqlService(config.newRelicConfig);
 		registerService(NewRelicNrqlService, nrqlService);
+
+		// Initialize and register the Schema service
+		const schemaService = new NewRelicSchemaService(config.newRelicConfig);
+		registerService(NewRelicSchemaService, schemaService);
 	}
 }
 

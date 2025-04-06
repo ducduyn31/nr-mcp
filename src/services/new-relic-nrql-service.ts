@@ -9,6 +9,8 @@ import {
 } from "./new-relic-dashboards-service.js";
 import { defaultContainer, type Constructor } from "../utils/index.js";
 import { PromisePool } from "@supercharge/promise-pool";
+import { NewRelicSchemaService } from "./new-relic-schema-service.js";
+import { EventBus, EventType } from "../utils/event-bus.js";
 
 /**
  * Interface for NRQL query information
@@ -171,10 +173,16 @@ export class NewRelicNrqlService extends NewRelicBaseService {
 	async executeNrqlQuery(
 		query: string,
 		timeout = 30000,
+		skipSchemaCache = false,
 	): Promise<NrqlQueryResult> {
 		try {
 			defaultLogger.info(`Executing NRQL query: ${query}`);
 			const startTime = Date.now();
+
+			// Check if we need to fetch schema for any table in the query
+			if (!skipSchemaCache) {
+				await this.checkAndCacheTableSchema(query);
+			}
 
 			// GraphQL query to execute NRQL
 			const nrqlGraphQLQuery = gql`
@@ -227,6 +235,85 @@ export class NewRelicNrqlService extends NewRelicBaseService {
 		} catch (error) {
 			defaultLogger.error(`Failed to execute NRQL query: ${query}`, error);
 			throw error;
+		}
+	}
+
+	/**
+	 * Check if we need to fetch schema for any table in the query
+	 * @param query NRQL query
+	 */
+	private async checkAndCacheTableSchema(query: string): Promise<void> {
+		try {
+			// Extract table names from the query
+			const tableNames = this.extractTableNamesFromQuery(query);
+			
+			if (tableNames.length === 0) {
+				return;
+			}
+
+			// Get the schema service from the container
+			const schemaService = defaultContainer.get(
+				NewRelicSchemaService as unknown as Constructor<NewRelicSchemaService>,
+			) as NewRelicSchemaService;
+
+			// Check and cache schema for each table
+			for (const tableName of tableNames) {
+				try {
+					if (!schemaService.isTableSchemaCached(tableName)) {
+						defaultLogger.info(`Schema for table ${tableName} not cached, fetching...`);
+						// Use skipSchemaCache=true to avoid infinite recursion
+						const schemaQuery = `SELECT keyset() FROM ${tableName} LIMIT 1`;
+						const result = await this.executeNrqlQuery(schemaQuery, 30000, true);
+						
+						if (result.results.length > 0 && result.results[0].keyset) {
+							const keyset = result.results[0].keyset as string[];
+							// Cache the schema directly
+							schemaService.cacheTableSchema(tableName, keyset);
+							// Publish event through the EventBus
+							const eventBus = defaultContainer.get(
+								EventBus as unknown as Constructor<EventBus>
+							) as EventBus;
+							eventBus.publish(EventType.SCHEMA_UPDATED, tableName);
+						}
+					} else {
+						defaultLogger.info(`Using cached schema for table ${tableName}`);
+					}
+				} catch (error) {
+					defaultLogger.error(`Error fetching schema for table ${tableName}`, error);
+					// Continue with other tables even if one fails
+				}
+			}
+		} catch (error) {
+			defaultLogger.error("Error checking and caching table schema", error);
+			// Don't throw the error, just log it and continue with the query
+		}
+	}
+
+	/**
+	 * Extract table names from a NRQL query
+	 * @param query NRQL query
+	 * @returns Array of table names
+	 */
+	private extractTableNamesFromQuery(query: string): string[] {
+		try {
+			// Simple regex to extract table names from FROM clauses
+			// This is a basic implementation and might need to be enhanced for complex queries
+			const fromRegex = /\bFROM\s+([A-Za-z0-9_]+)/gi;
+			const matches = [...query.matchAll(fromRegex)];
+			
+			// Extract and deduplicate table names
+			const tableNames = matches
+				.map(match => match[1])
+				.filter((value, index, self) => self.indexOf(value) === index);
+			
+			if (tableNames.length > 0) {
+				defaultLogger.info(`Extracted table names from query: ${tableNames.join(', ')}`);
+			}
+			
+			return tableNames;
+		} catch (error) {
+			defaultLogger.error("Error extracting table names from query", error);
+			return [];
 		}
 	}
 }
