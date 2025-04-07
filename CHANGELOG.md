@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.0](https://github.com/ducduyn31/nr-mcp/compare/v1.7.0...v1.8.0) (2025-04-07)
+
+
+### Features
+
+* add prompts template to suggest client workflow ([#17](https://github.com/ducduyn31/nr-mcp/issues/17)) ([ae1eac0](https://github.com/ducduyn31/nr-mcp/commit/ae1eac0928c6aadeccbbe5df00394e132b8d665c))
+
 ## [1.7.0](https://github.com/ducduyn31/nr-mcp/compare/v1.6.0...v1.7.0) (2025-04-03)
 
 
