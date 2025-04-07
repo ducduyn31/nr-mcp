@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.2](https://github.com/ducduyn31/nr-mcp/compare/v1.8.1...v1.8.2) (2025-04-07)
+
+
+### Bug Fixes
+
+* docker deploy action does not parse version correctly ([#21](https://github.com/ducduyn31/nr-mcp/issues/21)) ([f9c7d70](https://github.com/ducduyn31/nr-mcp/commit/f9c7d70a4bf54482cbf2459b4deb59e454a3cea6))
+
 ## [1.8.1](https://github.com/ducduyn31/nr-mcp/compare/v1.8.0...v1.8.1) (2025-04-07)
 
 
