@@ -75,15 +75,23 @@ describe('Service Registry', () => {
     // Verify NewRelicLogsService was not created
     expect(NewRelicLogsService).not.toHaveBeenCalled();
     
-    // Verify no services were registered
-    expect(defaultContainer.register).not.toHaveBeenCalled();
+    // Verify only EventBus was registered
+    expect(defaultContainer.register).toHaveBeenCalledTimes(1);
+    expect(defaultContainer.register).toHaveBeenCalledWith(
+      expect.any(Function), // EventBus constructor
+      expect.any(Object)    // EventBus instance
+    );
   });
 
   it('should initialize with empty config', () => {
     // Should not throw an error
     expect(() => initializeServices()).not.toThrow();
     
-    // Verify no services were registered
-    expect(defaultContainer.register).not.toHaveBeenCalled();
+    // Verify only EventBus was registered
+    expect(defaultContainer.register).toHaveBeenCalledTimes(1);
+    expect(defaultContainer.register).toHaveBeenCalledWith(
+      expect.any(Function), // EventBus constructor
+      expect.any(Object)    // EventBus instance
+    );
   });
 });
