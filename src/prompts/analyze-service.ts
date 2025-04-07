@@ -6,25 +6,25 @@
  */
 
 export const analyzeServicePrompt = {
-  name: "analyze-service",
-  description: "Analyze the performance and health of a specific service",
-  arguments: [
-    {
-      name: "serviceName",
-      description: "The name of the service to analyze",
-      required: true
-    },
-    {
-      name: "environment",
-      description: "The environment to analyze (prod or staging)",
-      required: false
-    }
-  ]
+	name: "analyze-service",
+	description: "Analyze the performance and health of a specific service",
+	arguments: [
+		{
+			name: "serviceName",
+			description: "The name of the service to analyze",
+			required: true,
+		},
+		{
+			name: "environment",
+			description: "The environment to analyze (prod or staging)",
+			required: false,
+		},
+	],
 };
 
 export interface AnalyzeServiceArgs {
-  serviceName: string;
-  environment?: string;
+	serviceName: string;
+	environment?: string;
 }
 
 /**
@@ -32,35 +32,37 @@ export interface AnalyzeServiceArgs {
  * @param args The prompt arguments
  * @returns The prompt response
  */
-export async function handleAnalyzeServicePrompt(args: Record<string, unknown>) {
-  const serviceName = args?.serviceName;
-  const environment = args?.environment || "prod";
-  
-  if (!serviceName) {
-    throw new Error("Missing required argument: serviceName");
-  }
+export async function handleAnalyzeServicePrompt(
+	args: Record<string, unknown>,
+) {
+	const serviceName = args?.serviceName;
+	const environment = args?.environment || "prod";
 
-  return {
-    messages: [
-      {
-        role: "user",
-        content: {
-          type: "text",
-          text: `I need to analyze the performance of the ${serviceName} service in the ${environment} environment. Please provide insights on its health and performance.`,
-        },
-      },
-      {
-        role: "user",
-        content: {
-          type: "text",
-          text: `newrelic-nrql://service/${serviceName}`,
-        },
-      },
-      {
-        role: "user",
-        content: {
-          type: "text",
-          text: `First, examine the available NRQL queries for ${serviceName} from the resource above. Look for queries related to:
+	if (!serviceName) {
+		throw new Error("Missing required argument: serviceName");
+	}
+
+	return {
+		messages: [
+			{
+				role: "user",
+				content: {
+					type: "text",
+					text: `I need to analyze the performance of the ${serviceName} service in the ${environment} environment. Please provide insights on its health and performance.`,
+				},
+			},
+			{
+				role: "user",
+				content: {
+					type: "text",
+					text: `newrelic-nrql://service/${serviceName}`,
+				},
+			},
+			{
+				role: "user",
+				content: {
+					type: "text",
+					text: `First, examine the available NRQL queries for ${serviceName} from the resource above. Look for queries related to:
 
 1. CPU usage - Search for queries containing "cpuPercent", "cpu", "processor"
 2. Memory usage - Search for queries with "memory", "memoryUsed", "heap"
@@ -88,8 +90,8 @@ Based on this data, please provide insights on:
 6. Cache performance metrics
 7. Any anomalies or concerning patterns
 8. Recommendations for improvement`,
-        },
-      },
-    ],
-  };
+				},
+			},
+		],
+	};
 }

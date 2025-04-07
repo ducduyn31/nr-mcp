@@ -97,7 +97,7 @@ export class McpLoggerStrategy implements LoggerStrategy {
 						logger: "mcp-server",
 						data,
 					});
-					
+
 					// If successful, remove from buffer
 					this.bufferQueue.shift();
 					this.bufferSize -= this.calculateLogSize(logEntry);
@@ -115,7 +115,6 @@ export class McpLoggerStrategy implements LoggerStrategy {
 			console.error("Error flushing log buffer:", error);
 		}
 	}
-
 
 	/**
 	 * Calculate the approximate size of a log entry in bytes

@@ -58,7 +58,7 @@ export async function listNewRelicSchemaResources() {
 				description: "All known New Relic table schemas",
 				mimeType: "application/json",
 			},
-        ],
+		],
 		resourceTemplates: [
 			{
 				uriTemplate: "newrelic-schema://table/{tableName}",
@@ -122,9 +122,9 @@ async function readNewRelicSchemaList(
 	// Get cache statistics
 	const cacheStats = schemaService.getCacheStats();
 
-    defaultLogger.info(
-        `Retrieved all cached schemas: ${cacheStats.totalCachedSchemas} tables`,
-    );
+	defaultLogger.info(
+		`Retrieved all cached schemas: ${cacheStats.totalCachedSchemas} tables`,
+	);
 
 	// Return the resource content
 	return {
@@ -134,7 +134,7 @@ async function readNewRelicSchemaList(
 				mimeType: "application/json",
 				text: JSON.stringify(
 					{
-						totalSchemas:  cacheStats.totalCachedSchemas,
+						totalSchemas: cacheStats.totalCachedSchemas,
 						tables: cacheStats.cachedTables.map((table) => table.tableName),
 					},
 					null,
@@ -167,14 +167,11 @@ export async function readNewRelicSchemaResource(uri: string) {
 
 		// Handle different URI patterns
 		if (parsedUri.isList) {
-			return await readNewRelicSchemaList(
-				uri,
-				schemaService,
-			);
+			return await readNewRelicSchemaList(uri, schemaService);
 		}
 
-        // If tableName is present, read the schema for that table
-        if (parsedUri.tableName) {
+		// If tableName is present, read the schema for that table
+		if (parsedUri.tableName) {
 			return await readNewRelicTableSchema(
 				uri,
 				parsedUri.tableName,

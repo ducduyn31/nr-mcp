@@ -18,7 +18,7 @@ import {
  * - newrelic-logs://request/xyz789/timeRange/120
  */
 const NEW_RELIC_LOGS_URI_PATTERN =
- /^newrelic-logs:\/\/(trace|request)\/([^\/]+)(?:\/timeRange\/(\d+))?$/;
+	/^newrelic-logs:\/\/(trace|request)\/([^\/]+)(?:\/timeRange\/(\d+))?$/;
 
 /**
  * Parse a New Relic logs resource URI
@@ -53,25 +53,29 @@ export async function listNewRelicLogsResources() {
 			{
 				uriTemplate: "newrelic-logs://trace/{traceId}",
 				name: "New Relic Logs by Trace ID",
-				description: "Logs filtered by a specific New Relic trace ID (default: last 60 minutes)",
+				description:
+					"Logs filtered by a specific New Relic trace ID (default: last 60 minutes)",
 				mimeType: "application/json",
 			},
 			{
 				uriTemplate: "newrelic-logs://trace/{traceId}/timeRange/{minutes}",
 				name: "New Relic Logs by Trace ID with Time Range",
-				description: "Logs filtered by a specific New Relic trace ID with custom time range in minutes",
+				description:
+					"Logs filtered by a specific New Relic trace ID with custom time range in minutes",
 				mimeType: "application/json",
 			},
 			{
 				uriTemplate: "newrelic-logs://request/{requestId}",
 				name: "New Relic Logs by Request ID",
-				description: "Logs filtered by a specific request ID (default: last 60 minutes)",
+				description:
+					"Logs filtered by a specific request ID (default: last 60 minutes)",
 				mimeType: "application/json",
 			},
 			{
 				uriTemplate: "newrelic-logs://request/{requestId}/timeRange/{minutes}",
 				name: "New Relic Logs by Request ID with Time Range",
-				description: "Logs filtered by a specific request ID with custom time range in minutes",
+				description:
+					"Logs filtered by a specific request ID with custom time range in minutes",
 				mimeType: "application/json",
 			},
 		],

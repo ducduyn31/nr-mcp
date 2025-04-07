@@ -5,7 +5,7 @@ import {
 	defaultContainer,
 	type Constructor,
 	formatNrqlResultAsMermaidChart,
-	type MermaidChartOptions
+	type MermaidChartOptions,
 } from "../utils/index.js";
 import {
 	NewRelicNrqlService,
@@ -25,11 +25,15 @@ export const RunNrqlQuerySchema = {
 	visualize: z
 		.boolean()
 		.optional()
-		.describe("Whether to visualize the results as a Mermaid chart (default: false)"),
+		.describe(
+			"Whether to visualize the results as a Mermaid chart (default: false)",
+		),
 	valueKey: z
 		.string()
 		.optional()
-		.describe("The key to extract values from for visualization (required if visualize is true)"),
+		.describe(
+			"The key to extract values from for visualization (required if visualize is true)",
+		),
 	chartTitle: z
 		.string()
 		.optional()
@@ -55,7 +59,7 @@ export const runNrqlQueryTool: ToolCallback<typeof RunNrqlQuerySchema> = async (
 			visualize = false,
 			valueKey,
 			chartTitle = "NRQL Query Results",
-			yAxisLabel = "Value"
+			yAxisLabel = "Value",
 		} = args;
 		defaultLogger.info(`Running NRQL query: ${query}`);
 
@@ -72,7 +76,7 @@ export const runNrqlQueryTool: ToolCallback<typeof RunNrqlQuerySchema> = async (
 			visualize,
 			valueKey,
 			chartTitle,
-			yAxisLabel
+			yAxisLabel,
 		});
 	} catch (error) {
 		defaultLogger.error("Error running NRQL query", error);
@@ -108,10 +112,15 @@ interface FormatOptions {
  */
 function formatNrqlQueryResult(
 	result: NrqlQueryResult,
-	options: FormatOptions = {}
+	options: FormatOptions = {},
 ): CallToolResult {
 	const { results, metadata, query, elapsedTime } = result;
-	const { visualize = false, valueKey, chartTitle = "NRQL Query Results", yAxisLabel = "Value" } = options;
+	const {
+		visualize = false,
+		valueKey,
+		chartTitle = "NRQL Query Results",
+		yAxisLabel = "Value",
+	} = options;
 
 	// Create a summary of the results
 	const summary = {
@@ -132,7 +141,7 @@ function formatNrqlQueryResult(
 			{
 				type: "text",
 				text: `Successfully executed NRQL query with ${results.length} datapoints in ${elapsedTime}ms.`,
-			}
+			},
 		],
 	};
 
@@ -141,18 +150,22 @@ function formatNrqlQueryResult(
 		try {
 			const chartOptions: MermaidChartOptions = {
 				title: chartTitle,
-				yAxisLabel: yAxisLabel
+				yAxisLabel: yAxisLabel,
 			};
 
-			const mermaidChart = formatNrqlResultAsMermaidChart(result, valueKey, chartOptions);
-			
+			const mermaidChart = formatNrqlResultAsMermaidChart(
+				result,
+				valueKey,
+				chartOptions,
+			);
+
 			// Add the Mermaid chart
 			const mermaidText = ["```mermaid", mermaidChart, "```"].join("\n");
 			response.content.push({
 				type: "text",
-				text: mermaidText
+				text: mermaidText,
 			});
-			
+
 			// Also add the JSON data for reference
 			response.content.push({
 				type: "text",
@@ -160,7 +173,7 @@ function formatNrqlQueryResult(
 			});
 		} catch (error) {
 			defaultLogger.error("Error generating Mermaid chart", error);
-			
+
 			// Fall back to JSON format if visualization fails
 			response.content.push({
 				type: "text",

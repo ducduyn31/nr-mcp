@@ -174,7 +174,7 @@ export class McpServer implements LoggingMessageSender {
 
 			// Connect the MCP server to the transport
 			await this.mcpServer.connect(this.transport);
-			
+
 			// Initialize logger after connection is established
 			this.initLogger();
 
@@ -220,17 +220,17 @@ export class McpServer implements LoggingMessageSender {
 	 * @param params The logging message parameters
 	 */
 	sendLoggingMessage(params: LoggingMessageNotification["params"]): void {
-	 try {
-	 	this.mcpServer.server.sendLoggingMessage(params);
-	 } catch (error) {
-	 	// If the server is not connected, log the error but don't crash
-	 	if (error instanceof Error && error.message === "Not connected") {
-	 		console.error("Failed to send logging message: Server not connected");
-	 	} else {
-	 		// For other errors, rethrow
-	 		throw error;
-	 	}
-	 }
+		try {
+			this.mcpServer.server.sendLoggingMessage(params);
+		} catch (error) {
+			// If the server is not connected, log the error but don't crash
+			if (error instanceof Error && error.message === "Not connected") {
+				console.error("Failed to send logging message: Server not connected");
+			} else {
+				// For other errors, rethrow
+				throw error;
+			}
+		}
 	}
 
 	/**
@@ -249,7 +249,7 @@ export class McpServer implements LoggingMessageSender {
 	 */
 	private registerEventHandlers(): void {
 		this.currentLogger.info("Registering event handlers");
-		
+
 		// Register schema update handler
 		this.registerSchemaUpdateHandler();
 	}
@@ -259,7 +259,7 @@ export class McpServer implements LoggingMessageSender {
 	 */
 	private logServerCapabilities(): void {
 		const capabilities = this.mcpServer.server.getCapabilities();
-		
+
 		this.currentLogger.info("MCP server capabilities:", {
 			serverName: this.config.name,
 			serverVersion: this.config.version,
@@ -267,24 +267,33 @@ export class McpServer implements LoggingMessageSender {
 			capabilities: {
 				tools: Object.keys(capabilities.tools || {}),
 				resources: Object.keys(capabilities.resources || {}),
-				prompts: Object.keys(capabilities.prompts || {})
-			}
+				prompts: Object.keys(capabilities.prompts || {}),
+			},
 		});
 
 		// Log detailed information about each capability type
 		if (capabilities.tools && Object.keys(capabilities.tools).length > 0) {
-			this.currentLogger.info(`Available tools (${Object.keys(capabilities.tools).length}):`,
-				Object.keys(capabilities.tools));
+			this.currentLogger.info(
+				`Available tools (${Object.keys(capabilities.tools).length}):`,
+				Object.keys(capabilities.tools),
+			);
 		}
 
-		if (capabilities.resources && Object.keys(capabilities.resources).length > 0) {
-			this.currentLogger.info(`Available resources (${Object.keys(capabilities.resources).length}):`,
-				Object.keys(capabilities.resources));
+		if (
+			capabilities.resources &&
+			Object.keys(capabilities.resources).length > 0
+		) {
+			this.currentLogger.info(
+				`Available resources (${Object.keys(capabilities.resources).length}):`,
+				Object.keys(capabilities.resources),
+			);
 		}
 
 		if (capabilities.prompts && Object.keys(capabilities.prompts).length > 0) {
-			this.currentLogger.info(`Available prompts (${Object.keys(capabilities.prompts).length}):`,
-				Object.keys(capabilities.prompts));
+			this.currentLogger.info(
+				`Available prompts (${Object.keys(capabilities.prompts).length}):`,
+				Object.keys(capabilities.prompts),
+			);
 		}
 	}
 
@@ -296,18 +305,18 @@ export class McpServer implements LoggingMessageSender {
 
 		// Get the EventBus from the service container
 		const eventBus = defaultContainer.get(
-			EventBus as unknown as Constructor<EventBus>
+			EventBus as unknown as Constructor<EventBus>,
 		) as EventBus;
-		
+
 		// Subscribe to schema updated events
 		eventBus.subscribe(EventType.SCHEMA_UPDATED, (payload) => {
 			const tableName = payload.data as string;
 			this.currentLogger.info(`Schema updated for table: ${tableName}`);
-			
+
 			// Send notification that the schema resource has been updated
 			const resourceUris = [
 				`newrelic-schema://table/${tableName}`,
-				"newrelic-schema://list"
+				"newrelic-schema://list",
 			];
 
 			// Send the notification to the MCP server
@@ -316,9 +325,10 @@ export class McpServer implements LoggingMessageSender {
 					uri,
 				});
 			}
-			
-			this.currentLogger.info(`Sent resources/updated notification for: ${resourceUris.join(", ")}`);
+
+			this.currentLogger.info(
+				`Sent resources/updated notification for: ${resourceUris.join(", ")}`,
+			);
 		});
-		
 	}
 }

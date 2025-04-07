@@ -246,7 +246,7 @@ export class NewRelicNrqlService extends NewRelicBaseService {
 		try {
 			// Extract table names from the query
 			const tableNames = this.extractTableNamesFromQuery(query);
-			
+
 			if (tableNames.length === 0) {
 				return;
 			}
@@ -260,18 +260,24 @@ export class NewRelicNrqlService extends NewRelicBaseService {
 			for (const tableName of tableNames) {
 				try {
 					if (!schemaService.isTableSchemaCached(tableName)) {
-						defaultLogger.info(`Schema for table ${tableName} not cached, fetching...`);
+						defaultLogger.info(
+							`Schema for table ${tableName} not cached, fetching...`,
+						);
 						// Use skipSchemaCache=true to avoid infinite recursion
 						const schemaQuery = `SELECT keyset() FROM ${tableName} LIMIT 1`;
-						const result = await this.executeNrqlQuery(schemaQuery, 30000, true);
-						
+						const result = await this.executeNrqlQuery(
+							schemaQuery,
+							30000,
+							true,
+						);
+
 						if (result.results.length > 0 && result.results[0].keyset) {
 							const keyset = result.results[0].keyset as string[];
 							// Cache the schema directly
 							schemaService.cacheTableSchema(tableName, keyset);
 							// Publish event through the EventBus
 							const eventBus = defaultContainer.get(
-								EventBus as unknown as Constructor<EventBus>
+								EventBus as unknown as Constructor<EventBus>,
 							) as EventBus;
 							eventBus.publish(EventType.SCHEMA_UPDATED, tableName);
 						}
@@ -279,7 +285,10 @@ export class NewRelicNrqlService extends NewRelicBaseService {
 						defaultLogger.info(`Using cached schema for table ${tableName}`);
 					}
 				} catch (error) {
-					defaultLogger.error(`Error fetching schema for table ${tableName}`, error);
+					defaultLogger.error(
+						`Error fetching schema for table ${tableName}`,
+						error,
+					);
 					// Continue with other tables even if one fails
 				}
 			}
@@ -300,16 +309,18 @@ export class NewRelicNrqlService extends NewRelicBaseService {
 			// This is a basic implementation and might need to be enhanced for complex queries
 			const fromRegex = /\bFROM\s+([A-Za-z0-9_]+)/gi;
 			const matches = [...query.matchAll(fromRegex)];
-			
+
 			// Extract and deduplicate table names
 			const tableNames = matches
-				.map(match => match[1])
+				.map((match) => match[1])
 				.filter((value, index, self) => self.indexOf(value) === index);
-			
+
 			if (tableNames.length > 0) {
-				defaultLogger.info(`Extracted table names from query: ${tableNames.join(', ')}`);
+				defaultLogger.info(
+					`Extracted table names from query: ${tableNames.join(", ")}`,
+				);
 			}
-			
+
 			return tableNames;
 		} catch (error) {
 			defaultLogger.error("Error extracting table names from query", error);

@@ -28,7 +28,7 @@ export function initializeServices(config: ServiceRegistryConfig = {}): void {
 	// Initialize and register the EventBus service
 	const eventBus = new EventBus();
 	registerService(EventBus, eventBus);
-	
+
 	if (config.newRelicConfig) {
 		const logsService = new NewRelicLogsService(config.newRelicConfig);
 		// Use a type assertion to help TypeScript understand the constructor type
