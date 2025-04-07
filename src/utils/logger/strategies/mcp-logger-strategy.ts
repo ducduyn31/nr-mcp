@@ -71,34 +71,51 @@ export class McpLoggerStrategy implements LoggerStrategy {
 			return;
 		}
 
-		// Send all buffered logs to the server
-		for (const log of this.bufferQueue) {
-			const { level, message, args } = log;
+		try {
+			// Process all logs in the buffer
+			while (this.bufferQueue.length > 0) {
+				const logEntry = this.bufferQueue[0]; // Peek at the first log
+				const { level, message, args } = logEntry;
 
-			// Convert any args to a data object
-			const data =
-				args.length > 0
-					? args.length === 1 && typeof args[0] === "object"
-						? args[0]
-						: { args }
-					: { message };
+				// Convert any args to a data object
+				const data =
+					args.length > 0
+						? args.length === 1 && typeof args[0] === "object"
+							? args[0]
+							: { args }
+						: { message };
 
-			// If message is not included in data, add it
-			if (typeof data === "object" && data !== null && !("message" in data)) {
-				(data as Record<string, unknown>).message = message;
+				// If message is not included in data, add it
+				if (typeof data === "object" && data !== null && !("message" in data)) {
+					(data as Record<string, unknown>).message = message;
+				}
+
+				try {
+					// Send the log message to the MCP server
+					this.server.sendLoggingMessage({
+						level,
+						logger: "mcp-server",
+						data,
+					});
+					
+					// If successful, remove from buffer
+					this.bufferQueue.shift();
+					this.bufferSize -= this.calculateLogSize(logEntry);
+				} catch (error) {
+					// If we get a "Not connected" error, stop trying to send logs
+					if (error instanceof Error && error.message === "Not connected") {
+						return; // Keep remaining logs in buffer
+					}
+					// For other errors, rethrow
+					throw error;
+				}
 			}
-
-			// Send the log message to the MCP server
-			this.server.sendLoggingMessage({
-				level,
-				logger: "mcp-server",
-				data,
-			});
+		} catch (error) {
+			// If there's any other error during flush, log it but don't crash
+			console.error("Error flushing log buffer:", error);
 		}
-
-		// Clear the buffer after sending all logs
-		this.clearBuffer();
 	}
+
 
 	/**
 	 * Calculate the approximate size of a log entry in bytes
@@ -135,44 +152,67 @@ export class McpLoggerStrategy implements LoggerStrategy {
 
 		if (!this.server) {
 			// No server attached, add to buffer queue
-			const logSize = this.calculateLogSize(logEntry);
-
-			// If adding this log would exceed the buffer size, remove oldest logs
-			while (
-				this.bufferSize + logSize > this.MAX_BUFFER_SIZE &&
-				this.bufferQueue.length > 0
-			) {
-				const removedLog = this.bufferQueue.shift();
-				if (removedLog) {
-					this.bufferSize -= this.calculateLogSize(removedLog);
-				}
-			}
-
-			// Add the new log to the buffer
-			this.bufferQueue.push(logEntry);
-			this.bufferSize += logSize;
+			this.addToBuffer(logEntry);
 			return;
 		}
 
-		// Server is attached, send the log directly
-		// Convert any args to a data object
-		const data =
-			args.length > 0
-				? args.length === 1 && typeof args[0] === "object"
-					? args[0]
-					: { args }
-				: { message };
+		// Server is attached, try to send the log directly
+		try {
+			// Convert any args to a data object
+			const data =
+				args.length > 0
+					? args.length === 1 && typeof args[0] === "object"
+						? args[0]
+						: { args }
+					: { message };
 
-		// If message is not included in data, add it
-		if (typeof data === "object" && data !== null && !("message" in data)) {
-			(data as Record<string, unknown>).message = message;
+			// If message is not included in data, add it
+			if (typeof data === "object" && data !== null && !("message" in data)) {
+				(data as Record<string, unknown>).message = message;
+			}
+
+			// Send the log message to the MCP server
+			this.server.sendLoggingMessage({
+				level,
+				logger: "mcp-server",
+				data,
+			});
+		} catch (error) {
+			// If we get a "Not connected" error, add the log to the buffer
+			if (error instanceof Error && error.message === "Not connected") {
+				this.addToBuffer(logEntry);
+			} else {
+				// For other errors, rethrow
+				throw error;
+			}
+		}
+	}
+
+	/**
+	 * Add a log entry to the buffer, managing buffer size
+	 * @param logEntry The log entry to add
+	 */
+	private addToBuffer(logEntry: {
+		level: LogLevel;
+		message: string;
+		args: unknown[];
+		timestamp: string;
+	}): void {
+		const logSize = this.calculateLogSize(logEntry);
+
+		// If adding this log would exceed the buffer size, remove oldest logs
+		while (
+			this.bufferSize + logSize > this.MAX_BUFFER_SIZE &&
+			this.bufferQueue.length > 0
+		) {
+			const removedLog = this.bufferQueue.shift();
+			if (removedLog) {
+				this.bufferSize -= this.calculateLogSize(removedLog);
+			}
 		}
 
-		// Send the log message to the MCP server
-		this.server.sendLoggingMessage({
-			level,
-			logger: "mcp-server",
-			data,
-		});
+		// Add the new log to the buffer
+		this.bufferQueue.push(logEntry);
+		this.bufferSize += logSize;
 	}
 }

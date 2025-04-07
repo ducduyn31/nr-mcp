@@ -88,11 +88,10 @@ export class McpServer implements LoggingMessageSender {
 					...config.options?.capabilities,
 					resources: {},
 					prompts: {},
+					logging: {},
 				},
 			},
 		);
-
-		this.initLogger();
 
 		// Create the transport adapter
 		this.transportAdapter = createTransportAdapter(config.transportType);
@@ -175,6 +174,12 @@ export class McpServer implements LoggingMessageSender {
 
 			// Connect the MCP server to the transport
 			await this.mcpServer.connect(this.transport);
+			
+			// Initialize logger after connection is established
+			this.initLogger();
+
+			// Log server capabilities
+			this.logServerCapabilities();
 
 			this.currentLogger.info("MCP server started successfully");
 		} catch (error) {
@@ -215,7 +220,17 @@ export class McpServer implements LoggingMessageSender {
 	 * @param params The logging message parameters
 	 */
 	sendLoggingMessage(params: LoggingMessageNotification["params"]): void {
-		this.mcpServer.server.sendLoggingMessage(params);
+	 try {
+	 	this.mcpServer.server.sendLoggingMessage(params);
+	 } catch (error) {
+	 	// If the server is not connected, log the error but don't crash
+	 	if (error instanceof Error && error.message === "Not connected") {
+	 		console.error("Failed to send logging message: Server not connected");
+	 	} else {
+	 		// For other errors, rethrow
+	 		throw error;
+	 	}
+	 }
 	}
 
 	/**
@@ -237,6 +252,40 @@ export class McpServer implements LoggingMessageSender {
 		
 		// Register schema update handler
 		this.registerSchemaUpdateHandler();
+	}
+
+	/**
+	 * Logs the server capabilities
+	 */
+	private logServerCapabilities(): void {
+		const capabilities = this.mcpServer.server.getCapabilities();
+		
+		this.currentLogger.info("MCP server capabilities:", {
+			serverName: this.config.name,
+			serverVersion: this.config.version,
+			transportType: this.config.transportType,
+			capabilities: {
+				tools: Object.keys(capabilities.tools || {}),
+				resources: Object.keys(capabilities.resources || {}),
+				prompts: Object.keys(capabilities.prompts || {})
+			}
+		});
+
+		// Log detailed information about each capability type
+		if (capabilities.tools && Object.keys(capabilities.tools).length > 0) {
+			this.currentLogger.info(`Available tools (${Object.keys(capabilities.tools).length}):`,
+				Object.keys(capabilities.tools));
+		}
+
+		if (capabilities.resources && Object.keys(capabilities.resources).length > 0) {
+			this.currentLogger.info(`Available resources (${Object.keys(capabilities.resources).length}):`,
+				Object.keys(capabilities.resources));
+		}
+
+		if (capabilities.prompts && Object.keys(capabilities.prompts).length > 0) {
+			this.currentLogger.info(`Available prompts (${Object.keys(capabilities.prompts).length}):`,
+				Object.keys(capabilities.prompts));
+		}
 	}
 
 	/**

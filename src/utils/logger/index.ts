@@ -28,7 +28,7 @@ import { OnlyErrorLoggerStrategy } from "./strategies/only-error-logger-strategy
 import type { LoggingMessageSender } from "./types.js";
 
 // Default logger instance
-export const defaultLogger = createOnlyErrorLogger();
+export const defaultLogger = createMcpLogger();
 
 /**
  * Create a logger with text strategy
