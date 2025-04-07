@@ -1,7 +1,7 @@
 {
   "name": "newrelic-mcp-server",
   "description": "MCP server allowing AI agent to query New Relic for debugging incidents",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "type": "module",
   "module": "index.ts",
   "bin": {

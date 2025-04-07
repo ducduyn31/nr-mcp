@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.1](https://github.com/ducduyn31/nr-mcp/compare/v1.8.0...v1.8.1) (2025-04-07)
+
+
+### Bug Fixes
+
+* allow client to select time range when looking at logs ([#19](https://github.com/ducduyn31/nr-mcp/issues/19)) ([990e743](https://github.com/ducduyn31/nr-mcp/commit/990e74312595c660039fd876e578af0e28b14160))
+
 ## [1.8.0](https://github.com/ducduyn31/nr-mcp/compare/v1.7.0...v1.8.0) (2025-04-07)
 
 
