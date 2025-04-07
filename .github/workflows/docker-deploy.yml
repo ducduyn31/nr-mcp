@@ -41,6 +41,25 @@ jobs:
       - name: Extract version number
         id: version
         run: echo "VERSION=$(echo ${{ github.event.inputs.tag }} | sed 's/^v//')" >> $GITHUB_OUTPUT
+      
+      - name: Fetch all tags to determine latest
+        run: git fetch --tags
+        
+      - name: Check if tag is latest
+        id: check_latest
+        run: |
+          # Get the latest tag by version sorting
+          LATEST_TAG=$(git tag -l | sort -V | tail -n 1)
+          echo "Latest tag is: $LATEST_TAG"
+          
+          # Check if current tag is the latest
+          if [ "${{ github.event.inputs.tag }}" = "$LATEST_TAG" ]; then
+            echo "IS_LATEST=true" >> $GITHUB_OUTPUT
+            echo "This is the latest tag"
+          else
+            echo "IS_LATEST=false" >> $GITHUB_OUTPUT
+            echo "This is not the latest tag"
+          fi
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -48,9 +67,8 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=${{ github.event.inputs.tag }}
             type=raw,value=${{ steps.version.outputs.VERSION }}
-            type=raw,value=latest,enable={{ github.event.inputs.tag == github.ref_name}}
+            ${{ steps.check_latest.outputs.IS_LATEST == 'true' && 'type=raw,value=latest' || '' }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
