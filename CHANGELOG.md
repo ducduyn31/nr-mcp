@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.5](https://github.com/ducduyn31/nr-mcp/compare/v1.8.4...v1.8.5) (2025-04-07)
+
+
+### Bug Fixes
+
+* add more nrql logging ([#28](https://github.com/ducduyn31/nr-mcp/issues/28)) ([0a25e94](https://github.com/ducduyn31/nr-mcp/commit/0a25e94d0afc6db7cdc362b113eb75bbb0a2297c))
+
 ## [1.8.4](https://github.com/ducduyn31/nr-mcp/compare/v1.8.3...v1.8.4) (2025-04-07)
 
 
