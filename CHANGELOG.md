@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.3](https://github.com/ducduyn31/nr-mcp/compare/v1.8.2...v1.8.3) (2025-04-07)
+
+
+### Bug Fixes
+
+* docker action should check the latest version ([#23](https://github.com/ducduyn31/nr-mcp/issues/23)) ([6245679](https://github.com/ducduyn31/nr-mcp/commit/6245679e1b21a88e3267da976758d1340a2be9f0))
+
 ## [1.8.2](https://github.com/ducduyn31/nr-mcp/compare/v1.8.1...v1.8.2) (2025-04-07)
 
 
