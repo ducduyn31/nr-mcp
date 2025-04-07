@@ -38,6 +38,10 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Extract version number
+        id: version
+        run: echo "VERSION=$(echo ${{ github.event.inputs.tag }} | sed 's/^v//')" >> $GITHUB_OUTPUT
+
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5
@@ -45,6 +49,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=${{ github.event.inputs.tag }}
+            type=raw,value=${{ steps.version.outputs.VERSION }}
             type=raw,value=latest,enable={{ github.event.inputs.tag == github.ref_name}}
 
       - name: Build and push Docker image
