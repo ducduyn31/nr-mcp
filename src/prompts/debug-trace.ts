@@ -13,12 +13,18 @@ export const debugTracePrompt = {
       name: "traceId",
       description: "The trace ID to debug",
       required: true
+    },
+    {
+      name: "timeRange",
+      description: "Time range in minutes to search for logs (default: 60)",
+      required: false
     }
   ]
 };
 
 export interface DebugTraceArgs {
   traceId: string;
+  timeRange?: number;
 }
 
 /**
@@ -31,6 +37,8 @@ export async function handleDebugTracePrompt(args: Record<string, unknown>) {
   if (!traceId) {
     throw new Error("Missing required argument: traceId");
   }
+  
+  const timeRange = args?.timeRange as number | undefined;
 
   return {
     messages: [
@@ -44,7 +52,7 @@ When asked to debug a New Relic trace using a trace ID, follow these steps:
 
 Step 1: Fetch the Trace Data
 Retrieve the trace from New Relic using the MCP server resource:
-📌 newrelic-logs://trace/${traceId}
+📌 newrelic-logs://trace/${traceId}${timeRange ? `/timeRange/${timeRange}` : ''}
 
 Step 2: Identify the Environment
 Determine whether the trace is from production or staging and query the corresponding service:
@@ -93,7 +101,7 @@ Propose a fix based on the findings.`,
         role: "user",
         content: {
           type: "text",
-          text: `newrelic-logs://trace/${traceId}`,
+          text: `newrelic-logs://trace/${traceId}${timeRange ? `/timeRange/${timeRange}` : ''}`,
         },
       },
       {
