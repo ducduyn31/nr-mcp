@@ -2,10 +2,6 @@ name: Manual Docker Deploy
 
 on:
   workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Tag to deploy (e.g., v1.6.0)'
-        required: true
 
 env:
   REGISTRY: docker.io
@@ -21,8 +17,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.inputs.tag }}
+      
+      - name: Fetch all tags
+        run: git fetch --tags
           
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -38,12 +35,32 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Extract tag name
+        id: extract_tag
+        run: |
+          # When manually running a workflow, we need to get the ref that was selected
+          REF="${{ github.ref }}"
+          
+          # Extract tag from the ref (assuming it's a tag)
+          TAG=${REF#refs/tags/}
+          
+          # If it's not a tag, show an error
+          if [[ "$TAG" == "$REF" ]]; then
+            echo "Error: This workflow should only be run on tags"
+            exit 1
+          fi
+          
+          echo "TAG=$TAG" >> $GITHUB_OUTPUT
+          echo "Selected tag: $TAG"
+          
       - name: Extract version number
         id: version
-        run: echo "VERSION=$(echo ${{ github.event.inputs.tag }} | sed 's/^v//')" >> $GITHUB_OUTPUT
+        run: echo "VERSION=$(echo ${{ steps.extract_tag.outputs.TAG }} | sed 's/^v//')" >> $GITHUB_OUTPUT
       
-      - name: Fetch all tags to determine latest
-        run: git fetch --tags
+      - name: Checkout specific tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.extract_tag.outputs.TAG }}
         
       - name: Check if tag is latest
         id: check_latest
@@ -53,7 +70,7 @@ jobs:
           echo "Latest tag is: $LATEST_TAG"
           
           # Check if current tag is the latest
-          if [ "${{ github.event.inputs.tag }}" = "$LATEST_TAG" ]; then
+          if [ "${{ steps.extract_tag.outputs.TAG }}" = "$LATEST_TAG" ]; then
             echo "IS_LATEST=true" >> $GITHUB_OUTPUT
             echo "This is the latest tag"
           else
