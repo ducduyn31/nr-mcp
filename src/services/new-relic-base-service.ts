@@ -67,7 +67,13 @@ export abstract class NewRelicBaseService {
 		variables?: Record<string, unknown>,
 	): Promise<T> {
 		try {
-			defaultLogger.info("Executing NerdGraph query");
+			// Check if this is a NRQL query by examining variables
+			if (variables && 'query' in variables && typeof variables.query === 'string') {
+				const nrqlQuery = variables.query as string;
+				defaultLogger.info(`Executing NerdGraph query with NRQL: ${nrqlQuery}`);
+			} else {
+				defaultLogger.info("Executing NerdGraph query");
+			}
 
 			const result = await this.graphQLClient.request<T>(query, variables);
 			return result;

@@ -97,6 +97,7 @@ export class NewRelicTagsService extends NewRelicBaseService {
 
 			// Build the NRQL query to fetch all unique tags
 			const nrqlQuery = "FROM Log SELECT uniques(tag) LIMIT MAX";
+			defaultLogger.info(`Executing NRQL query: ${nrqlQuery}`);
 
 			// Execute the query via NerdGraph
 			const nerdGraphQuery = `
