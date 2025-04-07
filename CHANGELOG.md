@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.4](https://github.com/ducduyn31/nr-mcp/compare/v1.8.3...v1.8.4) (2025-04-07)
+
+
+### Bug Fixes
+
+* fix logging through MCP Client ([#25](https://github.com/ducduyn31/nr-mcp/issues/25)) ([6258c79](https://github.com/ducduyn31/nr-mcp/commit/6258c79c66ea36aa6ac8976b5a61b7e82cca37ab))
+
 ## [1.8.3](https://github.com/ducduyn31/nr-mcp/compare/v1.8.2...v1.8.3) (2025-04-07)
 
 
