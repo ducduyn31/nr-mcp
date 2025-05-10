@@ -9,6 +9,9 @@ const requiredEnvVars = [
 	"NEW_RELIC_REGION",
 ];
 
+// x-release-please-version
+const VERSION = "1.8.4"; 
+
 async function main() {
 	try {
 		for (const envVar of requiredEnvVars) {
