@@ -9,6 +9,8 @@ const requiredEnvVars = [
 	"NEW_RELIC_REGION",
 ];
 
+const VERSION = "1.8.4"; // {x-release-please-version}
+
 async function main() {
 	try {
 		for (const envVar of requiredEnvVars) {
@@ -27,7 +29,7 @@ async function main() {
 
 		const server = new McpServer({
 			name: "newrelic-mcp-server",
-			version: "1.8.4", // x-release-please-version
+			version:  VERSION,
 			transportType: "stdio",
 			logger: defaultLogger,
 		});
