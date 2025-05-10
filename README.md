@@ -68,39 +68,6 @@ To connect an AI assistant to nr-mcp, add the following configuration to your MC
 }
 ```
 
-### Local Installation Connection
-
-```json
-{
-  "mcpServers": {
-    "newrelic": {
-      "command": "nr-mcp",
-      "args": [],
-      "env": {
-        "NEW_RELIC_API_KEY": "<YOUR_API_KEY>",
-        "NEW_RELIC_ACCOUNT_ID": "<YOUR_ACCOUNT_ID>",
-        "NEW_RELIC_REGION": "US"
-      }
-    }
-  }
-}
-```
-
-## Using with AI Assistants
-
-When using nr-mcp with AI assistants like Claude Opus or GPT-4o, include the following in your prompt:
-
-```
-I need to analyze New Relic data for my application.
-Please use the nr-mcp server to:
-1. Run NRQL queries
-2. Fetch dashboard data
-3. Analyze logs
-4. [Your specific task]
-
-Example NRQL query: SELECT count(*) FROM Transaction SINCE 1 hour ago
-```
-
 ---
 
 # For Developers
@@ -130,7 +97,7 @@ pnpm build
 docker build -t nr-mcp .
 
 # Build with a specific tag
-docker build -t nr-mcp:1.6.0 .
+docker build -t nr-mcp:1.8.5 .
 ```
 
 ### Running the Docker Container for Development

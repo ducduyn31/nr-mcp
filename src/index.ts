@@ -11,16 +11,13 @@ const requiredEnvVars = [
 
 async function main() {
 	try {
-		// Check for required environment variables
 		for (const envVar of requiredEnvVars) {
 			if (!process.env[envVar]) {
 				throw new Error(`Missing required environment variable: ${envVar}`);
 			}
 		}
 
-		// Initialize services
 		initializeServices({
-			// Add New Relic configuration if available from environment variables
 			newRelicConfig: {
 				apiKey: process.env.NEW_RELIC_API_KEY as string,
 				accountId: process.env.NEW_RELIC_ACCOUNT_ID as string,
@@ -28,18 +25,15 @@ async function main() {
 			},
 		});
 
-		// Create and start the MCP server
 		const server = new McpServer({
 			name: "newrelic-mcp-server",
-			version: "1.0.0",
+			version: "1.8.4", // x-release-please-version
 			transportType: "stdio",
 			logger: defaultLogger,
 		});
 
-		// Start the server
 		await server.start();
 
-		// Handle process termination signals
 		process.on("SIGINT", async () => {
 			defaultLogger.info("Received SIGINT signal, shutting down...");
 			await server.stop();
@@ -59,7 +53,6 @@ async function main() {
 	}
 }
 
-// Start the application
 main().catch((error) => {
 	defaultLogger.error("Unhandled error", error);
 	process.exit(1);
