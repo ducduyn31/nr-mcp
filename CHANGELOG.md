@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.8.6](https://github.com/ducduyn31/nr-mcp/compare/v1.8.5...v1.8.6) (2025-05-10)
+
+
+### Bug Fixes
+
+* bump version in index file ([#33](https://github.com/ducduyn31/nr-mcp/issues/33)) ([c7a5178](https://github.com/ducduyn31/nr-mcp/commit/c7a51786b0f3c8687d64567b8d34ca7e9a04c428))
+* make version upgrade works ([#31](https://github.com/ducduyn31/nr-mcp/issues/31)) ([587745c](https://github.com/ducduyn31/nr-mcp/commit/587745cbe015ac251d03101979b77ec206702798))
+
 ## [1.8.5](https://github.com/ducduyn31/nr-mcp/compare/v1.8.4...v1.8.5) (2025-04-07)
 
 
