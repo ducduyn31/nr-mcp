@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.6](https://github.com/ducduyn31/nr-mcp/compare/v1.8.5...v1.8.6) (2025-05-10)
+
+
+### Bug Fixes
+
+* make version upgrade works ([#31](https://github.com/ducduyn31/nr-mcp/issues/31)) ([587745c](https://github.com/ducduyn31/nr-mcp/commit/587745cbe015ac251d03101979b77ec206702798))
+
 ## [1.8.5](https://github.com/ducduyn31/nr-mcp/compare/v1.8.4...v1.8.5) (2025-04-07)
 
 
