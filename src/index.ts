@@ -9,7 +9,7 @@ const requiredEnvVars = [
 	"NEW_RELIC_REGION",
 ];
 
-const VERSION = "1.8.4"; // {x-release-please-version}
+const VERSION = "1.8.6"; // {x-release-please-version}
 
 async function main() {
 	try {
