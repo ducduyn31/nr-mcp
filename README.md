@@ -4,12 +4,15 @@ MCP server allowing AI agents to query New Relic for debugging incidents.
 
 - [For Users](#for-users): How to use nr-mcp with your AI assistants
 - [For Developers](#for-developers): How to contribute to nr-mcp
+- [Documentation](#documentation): Detailed documentation on tools and resources
 
 ---
 
 # For Users
 
 This section is for users who want to use the nr-mcp server with their AI assistants.
+
+For detailed information on available tools and resources, see the [Documentation](#documentation) section.
 
 ## Prerequisites
 
@@ -175,3 +178,9 @@ pnpm format
 ## License
 
 MIT
+
+---
+
+# Documentation
+
+- [Tools Documentation](docs/tools.md): Detailed information on available tools and their parameters

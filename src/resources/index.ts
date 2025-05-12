@@ -1,9 +1,5 @@
 import { defaultLogger } from "../utils/logger/index.js";
 import {
-	listNewRelicLogsResources,
-	readNewRelicLogsResource,
-} from "./new-relic-logs-resource.js";
-import {
 	listNewRelicServicesResources,
 	readNewRelicServicesResource,
 } from "./new-relic-services-resource.js";
@@ -21,7 +17,6 @@ import {
 } from "./new-relic-schema-resource.js";
 
 // Export all resource functions for direct use
-export * from "./new-relic-logs-resource.js";
 export * from "./new-relic-services-resource.js";
 export * from "./new-relic-dashboards-resource.js";
 export * from "./new-relic-nrql-resource.js";
@@ -78,12 +73,6 @@ export interface ResourceRegistryEntry {
  * Central registry of all available resources
  */
 const resourceRegistry: ResourceRegistryEntry[] = [
-	// New Relic Logs Resource
-	{
-		uriPattern: /^newrelic-logs:\/\/.+/,
-		listResources: listNewRelicLogsResources,
-		readResource: readNewRelicLogsResource,
-	},
 	// New Relic Services Resource
 	{
 		uriPattern: /^newrelic-services:\/\/.+/,
