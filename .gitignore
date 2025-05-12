@@ -7,3 +7,5 @@ dist/
 .vscode/
 *.swp
 .DS_Store
+.roo
+.roomodes

@@ -1,9 +1,10 @@
 import { defaultLogger } from "../utils/logger/index.js";
 import { RunNrqlQuerySchema, runNrqlQueryTool } from "./run-nrql-query.js";
+import { QueryLogsSchema, queryLogsTool } from "./query-logs.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
-// Export all tool functions for direct use
 export * from "./run-nrql-query.js";
+export * from "./query-logs.js";
 
 /**
  * Register all tools with the MCP server
@@ -20,5 +21,11 @@ export function registerAllTools(server: McpServer): void {
 		runNrqlQueryTool,
 	);
 
-	// Add more tool registrations here as they are created
+	// Register the query logs tool
+	server.tool(
+		"query-logs",
+		"Query New Relic logs by field and value with customizable parameters",
+		QueryLogsSchema,
+		queryLogsTool,
+	);
 }

@@ -29,7 +29,7 @@ async function main() {
 
 		const server = new McpServer({
 			name: "newrelic-mcp-server",
-			version:  VERSION,
+			version: VERSION,
 			transportType: "stdio",
 			logger: defaultLogger,
 		});

@@ -33,9 +33,24 @@ export interface LogsQueryOptions {
 	limit?: number;
 
 	/**
-	 * Time range in minutes (from now)
+	 * Start time range in minutes to look back from now (default: 60)
 	 */
-	timeRange?: number;
+	startTimeRange?: number;
+
+	/**
+	 * End time range in minutes to look back from now (default: 0, meaning now)
+	 */
+	endTimeRange?: number;
+
+	/**
+	 * Start timestamp in milliseconds since epoch
+	 */
+	startTimestamp?: number;
+
+	/**
+	 * End timestamp in milliseconds since epoch (null means now)
+	 */
+	endTimestamp?: number | null;
 
 	/**
 	 * Additional NRQL where clause conditions
@@ -70,23 +85,37 @@ export class NewRelicLogsService extends NewRelicBaseService {
 		try {
 			let query: string;
 
-			// If nrql is a string, use it directly
 			if (typeof nrql === "string") {
 				query = nrql;
 			} else {
-				// Otherwise, build the query from options
 				const {
 					limit = 100,
-					timeRange = 60,
+					startTimeRange,
+					endTimeRange,
+					startTimestamp,
+					endTimestamp,
 					whereConditions = [],
 					selectFields = [],
 				} = nrql;
 
-				// Build the where clause
-				// Calculate timestamp for timeRange minutes ago and current time
-				const pastTimestamp = Math.floor(Date.now() - timeRange * 60 * 1000);
-				const currentTimestamp = Math.floor(Date.now());
-				let whereClause = `WHERE timestamp > ${pastTimestamp} AND timestamp <= ${currentTimestamp}`;
+				let startTime: number;
+				let endTime: number;
+
+				if (startTimestamp !== undefined) {
+					startTime = startTimestamp;
+					endTime =
+						endTimestamp !== undefined && endTimestamp !== null
+							? endTimestamp
+							: Math.floor(Date.now());
+				} else {
+					const start = startTimeRange !== undefined ? startTimeRange : 60;
+					const end = endTimeRange !== undefined ? endTimeRange : 0;
+
+					startTime = Math.floor(Date.now() - start * 60 * 1000);
+					endTime = Math.floor(Date.now() - end * 60 * 1000);
+				}
+
+				let whereClause = `WHERE timestamp > ${startTime} AND timestamp <= ${endTime}`;
 				if (whereConditions.length > 0) {
 					whereClause += ` AND ${whereConditions.join(" AND ")}`;
 				}

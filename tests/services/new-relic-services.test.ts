@@ -5,7 +5,6 @@ import { NewRelicLogsService } from '../../src/services/new-relic-logs-service.j
 import type { LogsQueryOptions } from '../../src/services/new-relic-logs-service.js';
 import { GraphQLClient } from 'graphql-request';
 
-// Mock the GraphQLClient
 vi.mock('graphql-request', () => {
   return {
     GraphQLClient: vi.fn().mockImplementation(() => ({
@@ -14,7 +13,6 @@ vi.mock('graphql-request', () => {
   };
 });
 
-// Mock the logger
 vi.mock('../../src/utils/logger/index.js', () => {
   return {
     defaultLogger: {
@@ -26,13 +24,11 @@ vi.mock('../../src/utils/logger/index.js', () => {
   };
 });
 
-// Create a concrete implementation of NewRelicBaseService for testing
 class TestNewRelicBaseService extends NewRelicBaseService {
   public async testExecuteNerdGraphQuery<T>(query: string, variables?: Record<string, unknown>): Promise<T> {
     return this.executeNerdGraphQuery<T>(query, variables);
   }
 
-  // Expose protected properties for testing
   public getApiKey(): string {
     return this.apiKey;
   }
@@ -92,7 +88,6 @@ describe('NewRelicBaseService', () => {
     const mockVariables = { foo: 'bar' };
     const mockResponse = { data: { test: 'success' } };
     
-    // Setup the mock response
     const client = service.getGraphQLClient();
     (client.request as unknown as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
     
@@ -106,7 +101,6 @@ describe('NewRelicBaseService', () => {
     const mockQuery = 'query { test }';
     const mockError = new Error('GraphQL error');
     
-    // Setup the mock to throw an error
     const client = service.getGraphQLClient();
     (client.request as unknown as ReturnType<typeof vi.fn>).mockRejectedValue(mockError);
     
@@ -114,9 +108,7 @@ describe('NewRelicBaseService', () => {
   });
 });
 
-// Extended class for testing NewRelicLogsService
 class TestNewRelicLogsService extends NewRelicLogsService {
-  // Mock the executeNerdGraphQuery method for testing
   public mockExecuteNerdGraphQuery<T>(mockFn: (...args: unknown[]) => Promise<T>): void {
     // @ts-expect-error - Accessing protected method for testing
     this.executeNerdGraphQuery = mockFn;
@@ -158,7 +150,6 @@ describe('NewRelicLogsService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     
-    // Create a mock response for the GraphQL query
     mockGraphQLResponse = {
       actor: {
         account: {
@@ -222,18 +213,17 @@ describe('NewRelicLogsService', () => {
   it('should query logs with options object', async () => {
     const options: LogsQueryOptions = {
       limit: 50,
-      timeRange: 30,
+      startTimeRange: 30,
+      endTimeRange: 0,
       whereConditions: ['level = "error"', 'service = "api"'],
       selectFields: ['timestamp', 'message', 'level', 'service']
     };
     
     const result = await service.queryLogs(options);
     
-    // Calculate expected timestamps
     const currentTimestamp = 1672534800000;
-    const pastTimestamp = currentTimestamp - ((options.timeRange || 60) * 60 * 1000);
+    const pastTimestamp = currentTimestamp - ((options.startTimeRange || 60) * 60 * 1000);
     
-    // Expected query should include the where conditions and select fields
     const expectedQuery = `SELECT timestamp, message, level, service FROM Log WHERE timestamp > ${pastTimestamp} AND timestamp <= ${currentTimestamp} AND level = "error" AND service = "api" LIMIT 50`;
     
     // @ts-expect-error - Accessing protected method for testing
@@ -259,11 +249,9 @@ describe('NewRelicLogsService', () => {
     
     await service.queryLogs(options);
     
-    // Calculate expected timestamps
     const currentTimestamp = 1672534800000;
-    const pastTimestamp = currentTimestamp - (60 * 60 * 1000); // Default timeRange is 60 minutes
+    const pastTimestamp = currentTimestamp - (60 * 60 * 1000); // Default startTimeRange is 60 minutes
     
-    // Expected query should use defaults
     const expectedQuery = `SELECT * FROM Log WHERE timestamp > ${pastTimestamp} AND timestamp <= ${currentTimestamp} LIMIT 100`;
     
     // @ts-expect-error - Accessing protected method for testing
@@ -279,7 +267,6 @@ describe('NewRelicLogsService', () => {
   it('should handle errors when querying logs', async () => {
     const mockError = new Error('GraphQL error');
     
-    // Setup the mock to throw an error
     const mockQueryFn = vi.fn().mockRejectedValue(mockError);
     service.mockExecuteNerdGraphQuery(mockQueryFn);
     

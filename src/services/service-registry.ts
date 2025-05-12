@@ -25,30 +25,24 @@ export interface ServiceRegistryConfig {
  * @param config Service registry configuration
  */
 export function initializeServices(config: ServiceRegistryConfig = {}): void {
-	// Initialize and register the EventBus service
 	const eventBus = new EventBus();
 	registerService(EventBus, eventBus);
 
 	if (config.newRelicConfig) {
 		const logsService = new NewRelicLogsService(config.newRelicConfig);
-		// Use a type assertion to help TypeScript understand the constructor type
 		registerService(NewRelicLogsService, logsService);
 
-		// Initialize and register the tags service
 		const tagsService = new NewRelicTagsService(config.newRelicConfig);
 		registerService(NewRelicTagsService, tagsService);
 
-		// Initialize and register the dashboards service
 		const dashboardsService = new NewRelicDashboardsService(
 			config.newRelicConfig,
 		);
 		registerService(NewRelicDashboardsService, dashboardsService);
 
-		// Initialize and register the NRQL service
 		const nrqlService = new NewRelicNrqlService(config.newRelicConfig);
 		registerService(NewRelicNrqlService, nrqlService);
 
-		// Initialize and register the Schema service
 		const schemaService = new NewRelicSchemaService(config.newRelicConfig);
 		registerService(NewRelicSchemaService, schemaService);
 	}
@@ -60,7 +54,6 @@ export function initializeServices(config: ServiceRegistryConfig = {}): void {
  * @param instance Service instance
  */
 function registerService<T>(serviceConstructor: unknown, instance: T): void {
-	// Use a type assertion to convert the constructor to the expected type
 	const ctor = serviceConstructor as Constructor<T>;
 	defaultContainer.register(ctor, instance);
 }
