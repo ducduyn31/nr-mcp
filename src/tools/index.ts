@@ -11,21 +11,19 @@ export * from "./query-logs.js";
  * @param server The MCP server instance
  */
 export function registerAllTools(server: McpServer): void {
-	defaultLogger.info("Registering all tools");
+  defaultLogger.info("Registering all tools");
 
-	// Register the run NRQL query tool
-	server.tool(
-		"run-nrql-query",
-		"Execute a NRQL query and return the results as datapoints",
-		RunNrqlQuerySchema,
-		runNrqlQueryTool,
-	);
+  server.tool(
+    "run-nrql-query",
+    "Execute a NRQL query and return the results as data points",
+    RunNrqlQuerySchema,
+    runNrqlQueryTool,
+  );
 
-	// Register the query logs tool
-	server.tool(
-		"query-logs",
-		"Query New Relic logs by field and value with customizable parameters",
-		QueryLogsSchema,
-		queryLogsTool,
-	);
+  server.tool(
+    "query-logs",
+    "Query New Relic logs by field and value with customizable parameters",
+    QueryLogsSchema,
+    queryLogsTool,
+  );
 }

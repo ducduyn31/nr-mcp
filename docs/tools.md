@@ -40,27 +40,48 @@ Query New Relic logs by field and value with customizable parameters.
 |-----------|------|----------|---------|-------------|
 | queryValue | string | Yes | - | Value to search for in the specified field |
 | queryField | string | No | "trace.id" | Field name to query on |
-| timeRange | number | No | 60 | Time range in minutes to look back from now |
+| startTimeRange | number | No | 60 | Start time range in minutes to look back from now |
+| endTimeRange | number | No | 0 | End time range in minutes to look back from now (0 means now) |
+| startTimestamp | number | No | - | Start timestamp in milliseconds since epoch |
+| endTimestamp | number | No | null | End timestamp in milliseconds since epoch (null means now) |
 | limit | number | No | 100 | Maximum number of logs to return |
 | selectFields | string[] | No | ["timestamp", "message", "tag", "userAgent"] | Fields to select in the query |
 | additionalConditions | string[] | No | [] | Additional NRQL where clause conditions |
 
-### Example
+> **Note:** Time range parameters (`startTimeRange`/`endTimeRange`) and timestamp parameters (`startTimestamp`/`endTimestamp`) cannot be used together. Use either one approach or the other.
+
+### Examples
+
+#### Using Time Range Parameters
 
 ```json
 {
   "queryValue": "abc123",
   "queryField": "trace.id",
-  "timeRange": 60,
+  "startTimeRange": 60,
+  "endTimeRange": 0,
   "limit": 100,
   "selectFields": ["timestamp", "message", "tag", "userAgent"],
   "additionalConditions": ["level = 'ERROR'"]
 }
 ```
 
+#### Using Timestamp Parameters
+
+```json
+{
+  "queryValue": "abc123",
+  "queryField": "trace.id",
+  "startTimestamp": 1715644800000,
+  "endTimestamp": null,
+  "limit": 100,
+  "selectFields": ["timestamp", "message", "tag", "userAgent"]
+}
+```
+
 ### Common Use Cases
 
-1. **Query logs by trace ID**:
+1. **Query logs by trace ID** (default time range of 60 minutes):
    ```json
    {
      "queryValue": "abc123"
@@ -83,9 +104,28 @@ Query New Relic logs by field and value with customizable parameters.
    }
    ```
 
-4. **Query logs with a custom time range**:
+4. **Query logs with a custom time range** (last 2 hours):
    ```json
    {
      "queryValue": "abc123",
-     "timeRange": 120
+     "startTimeRange": 120,
+     "endTimeRange": 0
+   }
+   ```
+
+5. **Query logs for a specific time window** (30-15 minutes ago):
+   ```json
+   {
+     "queryValue": "abc123",
+     "startTimeRange": 30,
+     "endTimeRange": 15
+   }
+   ```
+
+6. **Query logs using specific timestamps**:
+   ```json
+   {
+     "queryValue": "abc123",
+     "startTimestamp": 1715644800000,
+     "endTimestamp": 1715648400000
    }

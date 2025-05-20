@@ -24,7 +24,8 @@
     "start": "node dist/index.js",
     "watch": "nodemon --watch src --ext ts --exec \"npm run build\"",
     "inspector": "mcp-inspector",
-    "dev": "concurrently \"npm run watch\" \"npm run inspector\""
+    "dev": "concurrently \"npm run watch\" \"npm run inspector\"",
+    "prepare": "husky"
   },
   "keywords": [
     "new-relic",
@@ -42,9 +43,11 @@
   "packageManager": "pnpm@10.6.2",
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
-    "@modelcontextprotocol/inspector": "^0.7.0",
+    "@modelcontextprotocol/inspector": "^0.12.0",
     "@types/node": "^22.15.14",
     "concurrently": "^9.1.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.0.0",
     "nodemon": "^3.1.10",
     "standard-version": "^9.5.0",
     "tailwindcss": "^4.1.5",
@@ -66,5 +69,11 @@
     "graphql": "^16.11.0",
     "graphql-request": "^7.1.2",
     "zod": "^3.24.4"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "biome format --write",
+      "biome lint --write"
+    ]
   }
 }
