@@ -1,97 +1,90 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { initializeServices, type ServiceRegistryConfig } from '../../src/services/service-registry.js';
-import { defaultContainer } from '../../src/utils/service-container.js';
-import { NewRelicLogsService } from '../../src/services/new-relic-logs-service.js';
-import type { Constructor } from '../../src/utils/service-container.js';
-import type { NewRelicApiConfig } from '../../src/services/new-relic-base-service.js';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import {
+  initializeServices,
+  type ServiceRegistryConfig,
+} from "../../src/services/service-registry.js";
+import { defaultContainer } from "../../src/utils/service-container.js";
+import { NewRelicLogsService } from "../../src/services/new-relic-logs-service.js";
+import type { NewRelicApiConfig } from "../../src/services/new-relic-base-service.js";
 
-// Mock the NewRelicLogsService
-vi.mock('../../src/services/new-relic-logs-service.js', () => {
+vi.mock("../../src/services/new-relic-logs-service.js", () => {
   return {
     NewRelicLogsService: vi.fn().mockImplementation(() => ({
-      queryLogs: vi.fn()
-    }))
+      queryLogs: vi.fn(),
+    })),
   };
 });
 
-// Mock the service container
-vi.mock('../../src/utils/service-container.js', () => {
+vi.mock("../../src/utils/service-container.js", () => {
   const mockContainer = {
     register: vi.fn(),
     get: vi.fn(),
     has: vi.fn(),
     getAll: vi.fn(),
-    clear: vi.fn()
+    clear: vi.fn(),
   };
-  
+
   return {
     defaultContainer: mockContainer,
-    ServiceContainer: vi.fn().mockImplementation(() => mockContainer)
+    ServiceContainer: vi.fn().mockImplementation(() => mockContainer),
   };
 });
 
-// Mock the logger
-vi.mock('../../src/utils/logger/index.js', () => {
+vi.mock("../../src/utils/logger/index.js", () => {
   return {
     defaultLogger: {
       info: vi.fn(),
       error: vi.fn(),
       debug: vi.fn(),
-      warning: vi.fn()
-    }
+      warning: vi.fn(),
+    },
   };
 });
 
-describe('Service Registry', () => {
+describe("Service Registry", () => {
   const mockNewRelicConfig: NewRelicApiConfig = {
-    apiKey: 'test-api-key',
-    accountId: '12345'
+    apiKey: "test-api-key",
+    accountId: "12345",
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('should initialize services with New Relic config', () => {
+  it("should initialize services with New Relic config", () => {
     const config: ServiceRegistryConfig = {
-      newRelicConfig: mockNewRelicConfig
+      newRelicConfig: mockNewRelicConfig,
     };
-    
+
     initializeServices(config);
-    
-    // Verify NewRelicLogsService was created with the correct config
+
     expect(NewRelicLogsService).toHaveBeenCalledWith(mockNewRelicConfig);
-    
-    // Verify the service was registered with the container
+
     expect(defaultContainer.register).toHaveBeenCalledWith(
       NewRelicLogsService,
-      expect.any(Object)
+      expect.any(Object),
     );
   });
 
-  it('should not initialize New Relic services when config is missing', () => {
+  it("should not initialize New Relic services when config is missing", () => {
     initializeServices({});
-    
-    // Verify NewRelicLogsService was not created
+
     expect(NewRelicLogsService).not.toHaveBeenCalled();
-    
-    // Verify only EventBus was registered
+
     expect(defaultContainer.register).toHaveBeenCalledTimes(1);
     expect(defaultContainer.register).toHaveBeenCalledWith(
       expect.any(Function), // EventBus constructor
-      expect.any(Object)    // EventBus instance
+      expect.any(Object), // EventBus instance
     );
   });
 
-  it('should initialize with empty config', () => {
-    // Should not throw an error
+  it("should initialize with empty config", () => {
     expect(() => initializeServices()).not.toThrow();
-    
-    // Verify only EventBus was registered
+
     expect(defaultContainer.register).toHaveBeenCalledTimes(1);
     expect(defaultContainer.register).toHaveBeenCalledWith(
       expect.any(Function), // EventBus constructor
-      expect.any(Object)    // EventBus instance
+      expect.any(Object), // EventBus instance
     );
   });
 });

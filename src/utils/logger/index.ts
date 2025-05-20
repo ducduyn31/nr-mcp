@@ -3,23 +3,19 @@
  * Re-exports all logger components for backward compatibility
  */
 
-// Export types
 export {
-	LogLevel,
-	type LoggerStrategy,
-	type LoggingMessageSender,
+  LogLevel,
+  type LoggerStrategy,
+  type LoggingMessageSender,
 } from "./types.js";
 
-// Export strategies
 export { TextLoggerStrategy } from "./strategies/text-logger-strategy.js";
 export { JsonLoggerStrategy } from "./strategies/json-logger-strategy.js";
 export { McpLoggerStrategy } from "./strategies/mcp-logger-strategy.js";
 export { OnlyErrorLoggerStrategy } from "./strategies/only-error-logger-strategy.js";
 
-// Export Logger class
 export { Logger } from "./logger.js";
 
-// Create and export the default logger instance with JSON strategy (default)
 import { Logger } from "./logger.js";
 import { JsonLoggerStrategy } from "./strategies/json-logger-strategy.js";
 import { TextLoggerStrategy } from "./strategies/text-logger-strategy.js";
@@ -27,7 +23,6 @@ import { McpLoggerStrategy } from "./strategies/mcp-logger-strategy.js";
 import { OnlyErrorLoggerStrategy } from "./strategies/only-error-logger-strategy.js";
 import type { LoggingMessageSender } from "./types.js";
 
-// Default logger instance
 export const defaultLogger = createMcpLogger();
 
 /**
@@ -35,7 +30,7 @@ export const defaultLogger = createMcpLogger();
  * @returns A logger instance with text strategy
  */
 export function createTextLogger(): Logger {
-	return Logger.getInstance(new TextLoggerStrategy());
+  return Logger.getInstance(new TextLoggerStrategy());
 }
 
 /**
@@ -43,7 +38,7 @@ export function createTextLogger(): Logger {
  * @returns A logger instance with JSON strategy
  */
 export function createJsonLogger(): Logger {
-	return Logger.getInstance(new JsonLoggerStrategy());
+  return Logger.getInstance(new JsonLoggerStrategy());
 }
 
 /**
@@ -52,13 +47,13 @@ export function createJsonLogger(): Logger {
  * @returns A logger instance with MCP strategy
  */
 export function createMcpLogger(server?: LoggingMessageSender): Logger {
-	const mcpStrategy = new McpLoggerStrategy();
+  const mcpStrategy = new McpLoggerStrategy();
 
-	if (server) {
-		mcpStrategy.attachServer(server);
-	}
+  if (server) {
+    mcpStrategy.attachServer(server);
+  }
 
-	return Logger.getInstance(mcpStrategy);
+  return Logger.getInstance(mcpStrategy);
 }
 
 /**
@@ -66,5 +61,5 @@ export function createMcpLogger(server?: LoggingMessageSender): Logger {
  * @returns A logger instance with OnlyError strategy
  */
 export function createOnlyErrorLogger(): Logger {
-	return Logger.getInstance(new OnlyErrorLoggerStrategy());
+  return Logger.getInstance(new OnlyErrorLoggerStrategy());
 }

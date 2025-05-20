@@ -23,23 +23,6 @@ For detailed information on available tools and resources, see the [Documentatio
 
 ## Quick Start
 
-### Option 1: Using Docker (Recommended)
-
-```bash
-# Run the Docker container with required environment variables
-docker run -it --rm \
-  -e NEW_RELIC_API_KEY=your_api_key \
-  -e NEW_RELIC_ACCOUNT_ID=your_account_id \
-  -e NEW_RELIC_REGION=US \
-  danielng123/nr-mcp
-```
-
-### Option 2: Using npx
-
-Not yet supported
-
-## MCP Client Configuration
-
 To connect an AI assistant to nr-mcp, add the following configuration to your MCP client setup:
 
 ### Docker Connection
@@ -59,7 +42,7 @@ To connect an AI assistant to nr-mcp, add the following configuration to your MC
         "NEW_RELIC_ACCOUNT_ID",
         "-e",
         "NEW_RELIC_REGION",
-        "danielng123/nr-mcp"
+        "danielng123/nr-mcp:latest"
       ],
       "env": {
         "NEW_RELIC_API_KEY": "<YOUR_API_KEY>",
@@ -89,29 +72,6 @@ pnpm install
 
 # Build the project
 pnpm build
-```
-
-## Docker Development
-
-### Building the Docker Image
-
-```bash
-# Build the Docker image locally
-docker build -t nr-mcp .
-
-# Build with a specific tag
-docker build -t nr-mcp:1.8.5 .
-```
-
-### Running the Docker Container for Development
-
-```bash
-# Run with environment variables for development
-docker run -it --rm \
-  -e NEW_RELIC_API_KEY=your_api_key \
-  -e NEW_RELIC_ACCOUNT_ID=your_account_id \
-  -e NEW_RELIC_REGION=US \
-  nr-mcp
 ```
 
 The MCP Inspector is a powerful tool for debugging and testing MCP servers and clients.

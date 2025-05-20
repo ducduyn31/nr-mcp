@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+if command -v pnpm >/dev/null 2>&1; then
+  pnpm lint-staged
+elif command -v yarn >/dev/null 2>&1; then
+  yarn lint-staged
+else
+  npm run lint-staged
+fi
